@@ -11,13 +11,14 @@ class Primes {
 		let start = 0
 		let top = LIMIT
 		let currSieve = PRIMES
+		let sieveSeg
 
 		while (start <= MAX) {
 
-			if (top >= MAX) top = MAX
+			if (top > MAX) top = MAX
 
 			if (start >= LIMIT) { 
-				const sieveSeg = this.setSieveSegment(start, RANGE, PRIMES, LIMIT)
+				sieveSeg = this.setSieveSegment(start, top, sieveSeg, RANGE, PRIMES)
 				currSieve = this.filterMultiples(start, sieveSeg, LIMIT)
 			}
 
@@ -46,22 +47,22 @@ class Primes {
 		return temp
 	}
 
-	static setSieveSegment (start, range, primes, limit) {
-		let temp = [...range]
+	static setSieveSegment (start, top, sieve, range, primes) {
+		sieve = [...range]
+		let p, firstMultiple
 
 		const iLen = primes.length
 		for (let i = 0; i < iLen; i++) {
-			const p = primes[i]
+			p = primes[i]
 			
-			let firstMultiple = Math.floor(start / p) * p
+			firstMultiple = Math.floor(start / p) * p
 			if (firstMultiple < start) firstMultiple += p
-			
-			const jLen = start + limit
-			for (let j = firstMultiple; j <= jLen; j+=p) {
-				temp[j - start] = false
+
+			for (let j = firstMultiple; j <= top; j+=p) {
+				sieve[j - start] = false
 			}
 		}
-		return temp
+		return sieve
 	}
 
 	static filterMultiples (offset, sieve, limit) {
@@ -76,16 +77,11 @@ class Primes {
 
 const deliverPrimes = n => {
 	const stream = Primes.stream()
-	let str = ''
-	for (var i = 0; i < n; i++) {
-		// str += ` |#${i}: ${stream.next().value}`
-		// str = stream.next().value
+	for (let i = 0; i < n; i++) {
 		stream.next()
 	}
-	// console.log(str)
 }
 
 deliverPrimes(25e6)
-// deliverPrimes(0)
 
 
