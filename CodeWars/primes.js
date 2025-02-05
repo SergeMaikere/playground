@@ -5,26 +5,23 @@ class Primes {
 		const MAX = 472882028
 		const LIMIT = Math.floor(Math.sqrt(MAX))
 		const RANGE = Array(LIMIT+1).fill(true)
-		const SIEVE = this.setSieve(RANGE, LIMIT)
-		const PRIMES = this.filterMultiples(0, SIEVE, LIMIT)
+		const PRIMES = this.getCorePrimes(RANGE, LIMIT)
 
 		let start = 0
 		let top = LIMIT
-		let currSieve = PRIMES
-		let sieveSeg
+		let currPrimes = PRIMES
 
 		while (start <= MAX) {
 
 			if (top > MAX) top = MAX
 
 			if (start >= LIMIT) { 
-				sieveSeg = this.setSieveSegment(start, top, sieveSeg, RANGE, PRIMES)
-				currSieve = this.filterMultiples(start, sieveSeg, LIMIT)
+				currPrimes = this.getSegmentedSievePrimes(start, top, [...RANGE], PRIMES, LIMIT)
 			}
 
-			const len = currSieve.length
+			const len = currPrimes.length
 			for (let i = 0; i < len; i++) {
-				yield currSieve[i]
+				yield currPrimes[i]
 			}
 
 			start += LIMIT
@@ -33,7 +30,7 @@ class Primes {
 
 	}
 
-	static setSieve (range, limit) { 
+	static getCorePrimes (range, limit) { 
 		let temp = [...range]
 		temp.fill(false, 0, 2)
 
@@ -44,25 +41,23 @@ class Primes {
 				}
 			}
 		}
-		return temp
+		return this.filterMultiples(0, temp, limit)
 	}
 
-	static setSieveSegment (start, top, sieve, range, primes) {
-		sieve = [...range]
-		let p, firstMultiple
+	static getSegmentedSievePrimes (start, top, sieve, primes, limit) {
+		let f, p
 
-		const iLen = primes.length
-		for (let i = 0; i < iLen; i++) {
+		const len = primes.length
+		for (let i = 0; i < len; i++) {
 			p = primes[i]
 			
-			firstMultiple = Math.floor(start / p) * p
-			if (firstMultiple < start) firstMultiple += p
+			f = this.getFirstMultiple(start, p)
 
-			for (let j = firstMultiple; j <= top; j+=p) {
+			for (let j = f; j <= top; j+=p) {
 				sieve[j - start] = false
 			}
 		}
-		return sieve
+		return this.filterMultiples(start, sieve, limit)
 	}
 
 	static filterMultiples (offset, sieve, limit) {
@@ -70,6 +65,12 @@ class Primes {
 		for (let i = 0; i < limit; i++) {
 			if (sieve[i]) result.push(i + offset)
 		}
+		return result
+	}
+
+	static getFirstMultiple (start, prime) {
+		let result = Math.floor( start / prime ) * prime
+		if ( result < start ) result += prime
 		return result
 	}
 }
@@ -83,5 +84,3 @@ const deliverPrimes = n => {
 }
 
 deliverPrimes(25e6)
-
-

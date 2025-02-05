@@ -3,7 +3,7 @@ const buildMatchesTable = ( numberOfTeams ) => createTable( getRange(numberOfTea
 
 const getRange = n => Array.from( Array(n), (x, i) => i + 1 )
 
-const createTable = range => [...Array(range.length -1 )].map( r => getRound(range) )
+const createTable = range => [...Array(range.length - 1)].map( _r => getRound(range) )
 
 const getRound = range => {
 	let result = buildRound(range)
