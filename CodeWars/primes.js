@@ -5,64 +5,50 @@ class Primes {
 
 		const MAX = 472882028
 		const LIMIT = Math.floor(Math.sqrt(MAX))+1
-		const RANGE = new Array(LIMIT+1).fill(true)
-
-		let start = 0
-		let top = LIMIT
-		let f, p, sieve
-
-		sieve = [...RANGE]
-		sieve.fill(false, 0, 2)
-
-		for (let p = 2; p*p < LIMIT; p++) {
-			if (sieve[p]) {
-				for (let i = p*p; i <= LIMIT; i+=p) {
-					sieve[i] = false
-				}
-			}
-		}
-		
-		let PRIMES = []
-		for (let i = 2; i < LIMIT; i++) {
-			if (sieve[i]) PRIMES.push(i)
-		}
+		const RANGE = [...new Array(LIMIT+1)].map( (_n, i) => i )
+		const PRIMES = this.getCoreMultiples( [...RANGE], LIMIT )
 
 		let currPrimes = PRIMES
-
+		let start = 0
+		let top = LIMIT
+		let f, p, tempSet
+		
 		while (start < MAX) {
 
 			if (top > MAX) top = MAX
 
-			if (start >= LIMIT) { 
-				sieve = [...RANGE]
+			if (start >= LIMIT) {
+				tempSet = new Set( [...RANGE].map(n => n + start) )
 
-				const len = PRIMES.length
-				for (let i = 0; i < len; i++) {
-					p = PRIMES[i]
+				for (const p of PRIMES.values()) {
 
 					f = Math.floor( start / p ) * p
 					if ( f < start ) f += p
 
 					for (let j = f; j < top; j+=p) {
-						sieve[j - start] = false
+						tempSet.delete(j)
 					}
 				}
-
-				currPrimes = []
-				for (let i = 0; i < LIMIT; i++) {
-					if (sieve[i]) currPrimes.push(i + start)
-				}
+						
+				currPrimes = tempSet
 			}
 
-			const len = currPrimes.length
-			for (let i = 0; i < len; i++) {
-				yield currPrimes[i]
-			}
+			for (const n of currPrimes.values()) yield n
 
 			start += LIMIT
 			top += LIMIT
 		}
+	}
 
+	static getCoreMultiples (range, limit) {
+		let primes = new Set( range.slice(2) )
+
+		for (let p = 2; p*p < limit; p++) {
+			for (let i = p*p; i <= limit; i+=p) {
+				primes.delete(i)
+			}
+		}
+		return primes
 	}
 }
 
@@ -74,4 +60,14 @@ const deliverPrimes = n => {
 	}
 }
 
+const deliverPrimesVerbose = n => {
+	const stream = Primes.stream()
+	let src = ''
+	for (let i = 0; i < n; i++) {
+		src += ` | ${stream.next().value}`
+	}
+	console.log(src)
+}
+
+// deliverPrimesVerbose(3000)
 deliverPrimes(25e6)
