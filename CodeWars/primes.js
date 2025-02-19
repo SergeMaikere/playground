@@ -1,63 +1,85 @@
+
 class Primes {
 
 	static * stream () {
 
-		const MAX = 1000
-		const SQRT = Math.floor( Math.sqrt(MAX) ) + 1
-		const RANGE = Array( MAX ).fill(false).fill(true, 2, 4)
+		const MAX = 472882027
+		const LIMIT = Math.floor(Math.sqrt(MAX)) + 1
+		const RANGE = 1e4
+		const PRIMES = this.#getCorePrimes(MAX)
 
-		let primes = []
-		let sieve = [...RANGE]
+		for ( let p of PRIMES ) yield p
 
-		for (let x = 1; x < SQRT; x++) {
-			for (let y = 1; y < SQRT; y++) {
-				this.#findPrimesAtkinWay( sieve, MAX, x, y )
-			}
-		}
+		let currPrimes, newSieve, processedSieve, p
 
+		let start = LIMIT
+		let top = LIMIT + RANGE
 
-		for (let i = 5; i < SQRT; i++) {
+		while (true) {
+
+			newSieve = this.#getNewSieve(start, RANGE)
+			processedSieve = this.#getSegmentedSieve(PRIMES, newSieve, start, top)
+			currPrimes = this.#filterSieve(processedSieve, start, RANGE)
+
+			for ( let p of currPrimes ) yield p
+
+			start += RANGE
+			top += RANGE
+		}		
+	}
+
+	static #getCorePrimes = (max) => {
+		let limit = Math.floor(Math.sqrt(max)) + 1
+		let sieve = Array(limit + 1).fill(true).fill(false, 0, 2)
+
+		for (let i = 2; i*i < limit; i++) {
 			if ( sieve[i] ) {
-				let s = i*i
-				for (var j = s; j < MAX; j+=s) {
+				for (let j = i*i; j <= limit; j+=i) {
 					sieve[j] = false
 				}
 			}
 		}
-
-		for (let k = 0; k < MAX; k++) {
-			if ( sieve[k] ) primes.push(k)
-		}
-
-		for (let p of primes) yield p
+		return this.#filterSieve(sieve, 0, limit)
 	}
 
-	static #findPrimesAtkinWay = (sieve, max, x, y) => {
+	static #getSegmentedSieve = (primes, sieve, start, top) => {
+		let len = primes.length
+		for (let i = 0; i < len; i++) {
+			let f = this.#getFirstMultipleOfPrime(primes[i], start)
 
-		let n = 4 * x * x + y * y
-		if ( (n < max) && ((n % 12 == 1) || (n % 12 == 5)) ) {
-			sieve[n] = true
+			for (let j = f; j <= top; j+=primes[i]) {
+				sieve[j - start] = false
+			}
 		}
-
-		n = 3 * x * x + y * y
-		if ( (n < max) && (n % 12 == 7) ) {
-			sieve[n] = true
-		}
-
-		n = 3 * x * x - y * y
-		if ( (x > y) && (n < max) && (n % 12 == 11) ) {
-			sieve[n] = true
-		}
+		return sieve
 	}
+
+	static #filterSieve = (sieve, start, limit) => {
+		let primes = []
+		for (let l = 0; l < limit; l++) {
+			if ( sieve[l] ) primes.push(l + start)
+		}
+		return primes
+	}
+
+	static #getFirstMultipleOfPrime = (prime, start) => {
+		let f = Math.floor(start / prime) * prime
+		if ( f <= start ) f += prime
+		return f
+	}
+
+	static #getNewSieve = (start, size) => start == 0 ? Array(size).fill(true).fill(false, 0, 2) : Array(size).fill(true)
 }
 
-const displayPrimes = (n) => {
+const display = n => {
 	let src = ''
 	const stream = Primes.stream()
 	for (let i = 0; i < n; i++) {
-		src += `| ${stream.next().value}`
+		src = `| ${stream.next().value}`
 	}
 	console.log({src})
 }
 
-displayPrimes(100)
+display(2440)
+
+
