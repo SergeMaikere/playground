@@ -19,16 +19,36 @@ class BinaryTree {
 	insert = data => this.#isEmpty() ? this.#setRoot(data) : this.#addNode(data, this.root)
 
 	remove = ( data, node = this.root ) => {
-		const badNode = this.find(data, node)
-		return badNode ? this.#handleSuccession(badNode) : console.log(`Data ${data} is not in this Tree`)
+		if ( !node ) return null
+		
+		if ( data > node.data ) node.right = this.remove(data, node.right)
+		if ( data < node.data ) node.left = this.remove(data, node.left)
+		if ( data === node.data ) node = this.#handleSuccession(node)
+		return node
 	}
 
-	find = ( data, node = this.root ) => {
+	inOrder = ( node = this.root ) => {
 		if ( !node ) return null
-		if ( node.data === data ) return node
-		
-		if ( data > node.data ) return this.find(data, node.right)
-		if ( data < node.data ) return this.find(data, node.left)
+
+		this.inOrder(node.left)
+		console.log(node.data + ' ')
+		this.inOrder(node.right)
+	}
+
+	preOrder = ( node = this.root ) => {
+		if ( !node ) return null
+
+		console.log(node.data + ' ')
+		this.preOrder(node.left)
+		this.preOrder(node.right)
+	}
+
+	postOrder = ( node = this.root ) => {
+		if ( !node ) return null
+
+		this.inOrder(node.left)
+		this.inOrder(node.right)
+		console.log(node.data + ' ')
 	}
 
 	#addNode = ( data, node ) => {
@@ -48,16 +68,17 @@ class BinaryTree {
 	}
 
 	#handleSuccession = node => {
-		if ( this.#isLeafy(node) ) return null
-		if ( this.#isRighty(node) ) return node.right 
-		if ( this.#isLefty(node) ) return node.left 
-		if ( this.#hasTwoChildren(node) ) return this.#handleWill(node)
+		if ( this.#isLeafy(node) ) node = null
+		if ( this.#isRighty(node) ) node = node.right 
+		if ( this.#isLefty(node) ) node = node.left 
+		if ( this.#hasTwoChildren(node) ) node = this.#handleWill(node)
+		return node
 	}
 
 	#handleWill = node => {
 		const succ = this.#getSuccessor(node)
 		node.data = succ.data
-		this.remove(succ.data, node.right)
+		node.right = this.remove(succ.data, node.right)
 		return node
 	}
 
@@ -75,14 +96,13 @@ class BinaryTree {
 }
 
 const bts = new BinaryTree()
-bts.insert(15)
-bts.insert(7)
-bts.insert(7)
-bts.insert(19)
-bts.insert(18)
-bts.insert(24)
-bts.insert(24)
-bts.insert(6)
-bts.remove(19)
-bts.remove(39)
-console.log(bts)
+bts.insert(100)
+bts.insert(20)
+bts.insert(200)
+bts.insert(10)
+bts.insert(30)
+bts.insert(150)
+
+bts.inOrder()
+bts.preOrder()
+bts.postOrder()
