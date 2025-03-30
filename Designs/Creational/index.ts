@@ -1,6 +1,8 @@
- import { EmployeeMatrice } from "./factory";
- import { faker } from '@faker-js/faker'
- import { Person } from "./builder";
+import { EmployeeMatrice } from "./factory";
+import { Person } from "./builder";
+import { faker } from '@faker-js/faker'
+ import { config1, config2 } from "./singleton";
+
 
 const getAddress = () => {
 	const f = faker.location
@@ -26,3 +28,6 @@ let userInfo = new Person(input)
 const newGuy = new EmployeeMatrice('seller', userInfo)
 
 console.log(newGuy.info)
+config1.print()
+
+console.log(config1 === config2)
