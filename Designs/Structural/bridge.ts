@@ -9,7 +9,6 @@ type Recipient = {email?: string, phone?: string, deviceId?: string}
 /*----------  Implementation  ----------*/
 
 class NotificationSender {
-
 	
 	send = ( message: string, recipient: Recipient ): string => {
 		throw new Error('The send method must be implemented')
@@ -17,7 +16,6 @@ class NotificationSender {
 }
 
 export class EmailSender extends NotificationSender {
-
 
 	send = ( message: string, recipient: Recipient ): string => {
 		console.log( `Sending Email to ${recipient.email}: ${message}` )
