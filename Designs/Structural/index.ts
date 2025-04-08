@@ -2,6 +2,9 @@ import { faker } from '@faker-js/faker'
 import { Calculator, CalculatorAdapter, NewCalculator } from "./adapter";
 import { EmailSender, NormalNotification, PushSender, SMSSender, UrgentNotification } from "./bridge";
 import { MenuGroup, MenuMaker } from './composite';
+import { addBio, addSocialMediaLinks, getBasicProfile } from './decorator';
+import { pipe, curry } from '../helper'
+import BlogDataFinder from './facade';
 
 
 /*----------  Adapter  ----------*/
@@ -66,3 +69,22 @@ console.log(menu.render())
 for ( const item of menu ) {
 	console.log(item.name)
 }
+
+/*----------  Decorator  ----------*/
+
+const myProfile = pipe(
+	curry(addBio)(faker.lorem.sentences(3)), 
+	curry(addSocialMediaLinks)([...Array(3)].map(i => faker.internet.domainName()))
+
+)( getBasicProfile('James Bond', 'jbond@mi6.uk', faker.internet.url()) )
+
+console.log('\nDecorator')
+myProfile.display()
+
+
+/*----------  Façade  ----------*/
+
+
+const myPost = new BlogDataFinder('comments')
+console.log('\nFacade')
+myPost.get(5).then( post => console.log(post) )
