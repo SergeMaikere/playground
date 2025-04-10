@@ -6,6 +6,7 @@ import { addBio, addSocialMediaLinks, getBasicProfile } from './decorator';
 import { pipe, curry } from '../helper'
 import BlogDataFinder from './facade';
 import { ComputerStock, FlyweightFactory } from './flyweight';
+import { DocumentServiceProxy } from './proxy';
 
 
 /*----------  Adapter  ----------*/
@@ -95,15 +96,33 @@ myPost.get(5).then( post => console.log(post) )
 
 const computers = new ComputerStock()
 
-computers.add("Dell", "Studio XPS", "Intel", "5G", "Y755P");
-computers.add("Dell", "Studio XPS", "Intel", "6G", "X997T");
-computers.add("Dell", "Studio XPS", "Intel", "2G", "U8U80");
-computers.add("Dell", "Studio XPS", "Intel", "2G", "NT777");
-computers.add("Dell", "Studio XPS", "Intel", "2G", "0J88A");
-computers.add("HP", "Envy", "Intel", "4G", "CNU883701");
-computers.add("HP", "Envy", "Intel", "2G", "TXU003283");
+computers
+.add("Dell", "Studio XPS", "Intel", "5G", "Y755P")
+.add("Dell", "Studio XPS", "Intel", "6G", "X997T")
+.add("Dell", "Studio XPS", "Intel", "2G", "U8U80")
+.add("Dell", "Studio XPS", "Intel", "2G", "NT777")
+.add("Dell", "Studio XPS", "Intel", "2G", "0J88A")
+.add("HP", "Envy", "Intel", "4G", "CNU883701")
+.add("HP", "Envy", "Intel", "2G", "TXU003283")
 
 console.log('\nFlyweight')
 console.log("Computers: " + computers.count());
 computers.get('Y755P').print()
 console.log("Flyweights: " + FlyweightFactory.count());
+
+
+/*----------  Proxy  ----------*/
+
+const adminService = new DocumentServiceProxy({name: faker.person.fullName(), role: 'admin'})
+const userService = new DocumentServiceProxy({name: faker.person.fullName(), role: 'user'})
+const guestService = new DocumentServiceProxy({name: faker.person.fullName(), role: 'guest'})
+
+console.log('\nProxy')
+adminService.add('report.docx', 'My awesome Report')
+adminService.add('holydays.docx', 'My awesome Holydays')
+adminService.add('complaints.docx', 'My long list of complaints against Janice from accounting')
+adminService.delete('complaints.docx')
+adminService.get('holydays.docx')
+
+userService.get('holydays.docx')
+userService.get('report.docx')

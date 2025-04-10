@@ -92,51 +92,38 @@ class Seller extends Employee {
 }
 
 export class EmployeeMatrice {
-	private role: string
-	private userInfo: UserInput
-	private employee: Admin | Customer | Seller
 
-	constructor (role: string, userInfo: UserInput) {
-		this.role = role
-		this.userInfo = userInfo
-		this.employee = this.create()
+	static create = (role: string, userInfo: UserInput): Admin | Seller | Customer => {
+		if ( role === Role.admin ) return this.makeAdmin(userInfo)
+		if ( role === Role.seller ) return this.makeSeller(userInfo)
+		if ( role === Role.customer ) return this.makeCustomer(userInfo)
+
+		throw new Error(`The role ${role} does not exists`)
 	}
 
-	get info () {
-		return this.employee.info
-	}
-
-	private create = (): Admin | Seller | Customer => {
-		if ( this.role === Role.admin ) return this.makeAdmin()
-		if ( this.role === Role.seller ) return this.makeSeller()
-		if ( this.role === Role.customer ) return this.makeCustomer()
-
-		throw new Error(`The role ${this.role} does not exists`)
-	}
-
-	private makeEmployee = (): User => {
+	private static makeEmployee = ( userInfo: UserInput ): User => {
 		return {
-			firstName: this.userInfo.firstName,
-			lastName: this.userInfo.lastName,
-			email: this.userInfo.email,
-			password: this.userInfo.password,
+			firstName: userInfo.firstName,
+			lastName: userInfo.lastName,
+			email: userInfo.email,
+			password: userInfo.password,
 		}
 	}
 
-	private makeAdmin = (): Admin => {
-		return new Admin( {...this.makeEmployee(), key: this.userInfo.key as string} )
+	private static makeAdmin = ( userInfo: UserInput ): Admin => {
+		return new Admin( {...this.makeEmployee(userInfo), key: userInfo.key as string} )
 	}
 
-	private makeSeller = (): Seller => {
+	private static makeSeller = ( userInfo: UserInput ): Seller => {
 		let mySeller = {
-			...this.makeEmployee(),
-			shopAddress: this.userInfo.shopAddress as string,
-			contact_No: this.userInfo.contact_No as string
+			...this.makeEmployee(userInfo),
+			shopAddress: userInfo.shopAddress as string,
+			contact_No: userInfo.contact_No as string
 		}
 		return new Seller(mySeller)
 	}
 
-	private makeCustomer = (): Customer => {
-		return new Customer( {...this.makeEmployee(), address: this.userInfo.address as string} )
+	private static makeCustomer = ( userInfo: UserInput ): Customer => {
+		return new Customer( {...this.makeEmployee(userInfo), address: userInfo.address as string} )
 	}
 }

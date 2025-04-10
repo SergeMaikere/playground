@@ -25,9 +25,8 @@ let userInfo = new Person(input)
 .build()
 
 
-const newGuy = new EmployeeMatrice('seller', userInfo)
+const newGuy = EmployeeMatrice.create('seller', userInfo)
 
 console.log(newGuy.info)
-config1.print()
 
 console.log(config1 === config2)
