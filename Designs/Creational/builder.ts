@@ -5,8 +5,6 @@ import V from '../validation'
 ======================================*/
 
 
-
-
 export interface User {
 	firstName: string
 	lastName: string
