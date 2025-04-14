@@ -1,4 +1,5 @@
 import { Add, Calculator, Divide, Multiply, Substrac } from "./command";
+import { Chatroom, Participant } from "./mediator";
 import { Display, WeatherStation } from "./observer";
 
 const myCalculator = new Calculator()
@@ -33,3 +34,26 @@ weather9
 .removeObserver(device2)
 .addObserver(device4)
 .setTemperature(19)
+
+console.log('\nMediator')
+
+const caramail = new Chatroom()
+const yoko = new Participant("Yoko");
+const john = new Participant("John");
+const paul = new Participant("Paul");
+const ringo = new Participant("Ringo");
+const ringo2 = new Participant("Ringo");
+
+ringo.send('Hello World')
+
+caramail
+.register(yoko)
+.register(john)
+.register(paul)
+.register(ringo)
+
+yoko.send("All you need is love.")
+yoko.send("I love you John.")
+john.send("Hey, no need to broadcast", yoko)
+paul.send("Ha, I heard that!")
+ringo.send("Paul, what do you think?", paul)
