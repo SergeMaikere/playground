@@ -1,6 +1,8 @@
+import { faker } from "@faker-js/faker";
 import { Add, Calculator, Divide, Multiply, Substrac } from "./command";
 import { Chatroom, Participant } from "./mediator";
 import { Display, WeatherStation } from "./observer";
+import { Dude, DudeBackUp } from "./memento";
 
 const myCalculator = new Calculator()
 
@@ -57,3 +59,37 @@ yoko.send("I love you John.")
 john.send("Hey, no need to broadcast", yoko)
 paul.send("Ha, I heard that!")
 ringo.send("Paul, what do you think?", paul)
+
+console.log('\nMementos')
+
+const makeRandomDude = () => (
+	 {
+		firstName: faker.person.firstName(),
+		lastName: faker.person.lastName(),
+		email: faker.internet.email(),
+		password: faker.string.alphanumeric(16),
+	}
+)
+
+const rollBackDude = (d: Dude, mementos: DudeBackUp) => {
+	d.dehydrate( mementos.get(d.id) )
+	return d
+}
+
+const backup = new DudeBackUp()
+const dudes = [ makeRandomDude(), makeRandomDude(), makeRandomDude() ]
+.map( d => new Dude(d) )
+.map( d => {d.setBirthday(faker.date.birthdate()); return d} )
+.map( d => {d.build(); return d} )
+.map( d => {backup.add(d.hydrate()); return d} )
+
+backup.index()
+
+dudes
+.map( d => {d.setEmail(faker.internet.email()); return d} )
+.map( d => {console.log(d.userInfo().email); return d} )
+.map( d => {d.dehydrate(backup.get(d.id)); return d} )
+.forEach( d => console.log(d.userInfo().email) )
+
+
+
