@@ -13,3 +13,5 @@ export const errorHandler = ( message: string ) => {
 	console.error(message) 
 	return undefined
 }
+
+export const timeout = ( ms: number ) => new Promise( resolve => setTimeout(resolve, ms) )
