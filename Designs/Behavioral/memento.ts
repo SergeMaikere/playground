@@ -1,4 +1,7 @@
-import { Person, User } from '../Creational/builder'
+import { Person, User, UserData } from '../Creational/builder'
+import { errorHandler } from '../helper'
+
+type memento = {timestamp: number, json: string}
 
 export class Dude extends Person {
 
@@ -26,38 +29,63 @@ export class Dude extends Person {
 		this.contact_No = userInfo.contact_No
 		this.key = userInfo.key
 		this.isBuild = true
+
+		return true
 	}
 }
 
-export class DudeBackUp {
+class DudeBackUp {
 
-	mementos: Map<string, string>
+	mementos: { [user: string]: memento[] }
 
 	constructor () {
-		this.mementos = new Map()
+		this.mementos = {}
 	}
 
-	add = ( user: {key: string ,json: string} ) => this.mementos.set(user.key, user.json)
-
-	get = (key: string) => {
-		const result = this.mementos.get(key)
-		this.mementos.delete(key)
-		return result
+	add = ( user: {key: string ,json: string} ) => {
+		const memento = { timestamp: Date.now(), json: user.json }
+		if ( this.mementos[user.key] && this.mementos[user.key].length > 0 )
+			this.mementos[user.key].push(memento)
+		else 
+			this.mementos[user.key] = [ memento ]
 	}
 
-	last = () => Array.from(this.mementos)[this.mementos.size - 1][1] 
+	get = ( user: string ) => {
+		const result = this.mementos[user]?.pop()
+		if ( !result ) return errorHandler('There are no backup for this user ' + user)
+		return result.json
+	}
 
 	index = () => {
 		if ( this.isEmpty() ) return errorHandler('DudeBackup is empty')
 		console.log('\nDudeBackup')
-		this.mementos.forEach( (v, k) => console.log({k, v}) )
+		for (const user in this.mementos) {
+			console.log('\n', user)
+			this.mementos[user].forEach( m => console.log(m) )
+		}
+		return true
 	}
 
-	private isEmpty = () => this.mementos.size === 0
-	
+	private isEmpty = () => Object.keys(this.mementos).every( user => !this.mementos.hasOwnProperty(user) )
 }
 
-const errorHandler = ( message: string ) => { console.error(message) }
 
+export class DudeFacade {
+
+	private backup: DudeBackUp
+
+	constructor () {
+		this.backup = new DudeBackUp()
+	}
+
+	build = ( dude: Dude ) => {
+		if ( !dude.build() ) return
+		this.backup.add(dude.hydrate())
+	}
+
+	rollBack = ( dude: Dude ) => dude.dehydrate(this.backup.get(dude.id)) 
+
+	print = () => this.backup.index()
+}
 
 

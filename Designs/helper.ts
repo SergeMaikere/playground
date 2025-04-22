@@ -8,3 +8,8 @@ export const curry = (fn: Function) => {
 	}
 	return curried
 }
+
+export const errorHandler = ( message: string ) => { 
+	console.error(message) 
+	return undefined
+}

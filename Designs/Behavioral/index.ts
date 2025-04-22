@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker";
 import { Add, Calculator, Divide, Multiply, Substrac } from "./command";
 import { Chatroom, Participant } from "./mediator";
 import { Display, WeatherStation } from "./observer";
-import { Dude, DudeBackUp } from "./memento";
+import { Dude, DudeFacade } from "./memento";
 
 const myCalculator = new Calculator()
 
@@ -71,24 +71,19 @@ const makeRandomDude = () => (
 	}
 )
 
-const rollBackDude = (d: Dude, mementos: DudeBackUp) => {
-	d.dehydrate( mementos.get(d.id) )
-	return d
-}
+const handler = new DudeFacade()
 
-const backup = new DudeBackUp()
 const dudes = [ makeRandomDude(), makeRandomDude(), makeRandomDude() ]
 .map( d => new Dude(d) )
 .map( d => {d.setBirthday(faker.date.birthdate()); return d} )
-.map( d => {d.build(); return d} )
-.map( d => {backup.add(d.hydrate()); return d} )
+.map( d => {handler.build(d); return d} )
 
-backup.index()
+handler.print()
 
 dudes
 .map( d => {d.setEmail(faker.internet.email()); return d} )
 .map( d => {console.log(d.userInfo().email); return d} )
-.map( d => {d.dehydrate(backup.get(d.id)); return d} )
+.map( d => {handler.rollBack(d); return d} )
 .forEach( d => console.log(d.userInfo().email) )
 
 

@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import V from '../validation'
+import { errorHandler } from '../helper'
 
 /*======================================
 =            BUILDER METHOD            =
@@ -115,12 +116,13 @@ export class Person {
 	}
 
 	build = () => {
-		if ( !V.isValidName(this.firstName) || !V.isValidName(this.lastName) ) throw new Error('Name is invalid')
-		if ( !V.isEmail(this.email) ) throw new Error('Email is invalid or absent')
-		if ( !V.isPassword(this.password) ) throw new Error('Password is invalid or absent')
-		if ( !V.isDate(this.birthday) ) throw new Error('Date is invalid or absent')
+		if ( !V.isValidName(this.firstName) || !V.isValidName(this.lastName) ) return errorHandler('Name is invalid')
+		if ( !V.isEmail(this.email) ) return errorHandler('Email is invalid or absent')
+		if ( !V.isPassword(this.password) ) return errorHandler('Password is invalid or absent')
+		if ( !V.isDate(this.birthday) ) return errorHandler('Date is invalid or absent')
 		
 		this.isBuild = true
+		return true 
 	}
 
 	userInfo = (): UserData => {
