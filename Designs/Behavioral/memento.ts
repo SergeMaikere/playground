@@ -43,11 +43,8 @@ class DudeBackUp {
 	}
 
 	add = ( user: {key: string ,json: string} ) => {
-		const memento = { timestamp: Date.now(), json: user.json }
-		if ( this.mementos[user.key] && this.mementos[user.key].length > 0 )
-			this.mementos[user.key].push(memento)
-		else 
-			this.mementos[user.key] = [ memento ]
+		this.mementos[user.key] = [ ...this.mementos[user.key], { timestamp: Date.now(), json: user.json } ]
+		return true
 	}
 
 	get = ( user: string ) => {

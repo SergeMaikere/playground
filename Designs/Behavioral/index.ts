@@ -4,6 +4,7 @@ import { Chatroom, Participant } from "./mediator";
 import { Display, WeatherStation } from "./observer";
 import { Dude, DudeFacade } from "./memento";
 import { TrafficLight } from "./state";
+import { run } from "./strategy";
 
 // const myCalculator = new Calculator()
 
@@ -77,7 +78,7 @@ import { TrafficLight } from "./state";
 // const dudes = [ makeRandomDude(), makeRandomDude(), makeRandomDude() ]
 // .map( d => new Dude(d) )
 // .map( d => {d.setBirthday(faker.date.birthdate()); return d} )
-// .map( d => {handler.build(d); return d} )
+// .map( d => {handler.build(d); return d} ) rand: number[]
 
 // handler.print()
 
@@ -88,7 +89,10 @@ import { TrafficLight } from "./state";
 // .forEach( d => console.log(d.userInfo().email) )
 
 
-console.log('\nState')
+// console.log('\nState')
 
-const trafficLight = new TrafficLight()
-trafficLight.start()
+// const trafficLight = new TrafficLight()
+// trafficLight.start()
+
+console.log('\nStrategy')
+run()

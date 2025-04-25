@@ -9,6 +9,14 @@ export const curry = (fn: Function) => {
 	return curried
 }
 
+export const voyeur = (name: string, x: any): any => {
+	console.log('\n' + name.toUpperCase())
+	console.group()
+	console.log(x)
+	console.groupEnd()
+	return x
+}
+
 export const errorHandler = ( message: string ) => { 
 	console.error(message) 
 	return undefined
