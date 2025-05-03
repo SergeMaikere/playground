@@ -4,7 +4,7 @@ import { Chatroom, Participant } from "./mediator";
 import { Display, WeatherStation } from "./observer";
 import { Dude, DudeFacade } from "./memento";
 import { TrafficLight } from "./state";
-import { run } from "./strategy";
+import { run } from "./template";
 
 // const myCalculator = new Calculator()
 
@@ -94,5 +94,8 @@ import { run } from "./strategy";
 // const trafficLight = new TrafficLight()
 // trafficLight.start()
 
-console.log('\nStrategy')
+// console.log('\nStrategy')
+// run()
+
+console.log('\nTemplate')
 run()
