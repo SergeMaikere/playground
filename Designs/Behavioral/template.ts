@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker/."
 import { errorHandler, getArrayRandomNumbers, getArrayRandomTexts, pipe } from "../helper"
 
 
