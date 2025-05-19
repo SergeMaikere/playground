@@ -1,4 +1,4 @@
-import { Person, User, UserData } from '../Creational/builder'
+import { Person, User } from '../Creational/builder'
 import { errorHandler } from '../helper'
 
 type memento = {timestamp: number, json: string}
