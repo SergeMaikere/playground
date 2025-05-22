@@ -12,7 +12,7 @@ export class Calculator {
 		this.operations = this.calculate
 	}
 
-	calculate = ( n1: number, n2: number, operation: string ): number => {
+	protected calculate = ( n1: number, n2: number, operation: string ): number => {
 		if ( operation === 'add' ) return n1 + n2
 		if ( operation === 'sub' ) return n1 - n2
 		if ( operation === 'mult' ) return n1 * n2
@@ -51,7 +51,7 @@ export class CalculatorAdapter extends Calculator {
 		this.newCalculator = new NewCalculator()
 	}
 
-	calculate = ( n1: number, n2: number, operation: string ): number => {
+	protected calculate = ( n1: number, n2: number, operation: string ): number => {
 		if ( operation === 'add' ) return this.newCalculator.add(n1, n2)
 		if ( operation === 'sub' ) return this.newCalculator.sub(n1, n2)
 		if ( operation === 'mult' ) return this.newCalculator.mult(n1, n2)

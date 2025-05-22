@@ -5,8 +5,6 @@
 =================================*/
 
 
-
-
 type Settings = {
 	apiUrl: string
 	retryAtttemps: number
@@ -28,48 +26,44 @@ type Settings = {
 	plugins: string[],
 }
 
+export default class ConfigManager {
 
-class ConfigManager {
-
-	static instance: ConfigManager | null
-	private settings!: Settings
+	static instance: ConfigManager
+	private _settings: Settings = {
+		//default settings
+		apiUrl: faker.internet.url(),
+		retryAtttemps: 3,
+		darkMode: true,
+		theme: {
+			extend: {
+				fontFamily: {
+			    	poppins: faker.lorem.words(2),
+			    	rajdhani: faker.lorem.words(2)
+			  	},
+			  	colors: {
+			    	primary: faker.string.hexadecimal(),
+			    	secondary: faker.string.hexadecimal(),
+			    	tertiary: faker.string.hexadecimal(),
+			    	quaternary: faker.string.hexadecimal()
+			  	}
+			}
+		},
+		plugins: ['myPlugin'],
+	}
 
 	constructor () {
 		if ( ConfigManager.instance ) return ConfigManager.instance
-
 		ConfigManager.instance = this
-
-		this.settings = {
-			//default settings
-			apiUrl: faker.internet.url(),
-			retryAtttemps: 3,
-			darkMode: true,
-			theme: {
-				extend: {
-					fontFamily: {
-				    	poppins: faker.lorem.words(2),
-				    	rajdhani: faker.lorem.words(2)
-				  	},
-				  	colors: {
-				    	primary: faker.string.hexadecimal(),
-				    	secondary: faker.string.hexadecimal(),
-				    	tertiary: faker.string.hexadecimal(),
-				    	quaternary: faker.string.hexadecimal()
-				  	}
-				}
-			},
-			plugins: [],
-		}
 	}
 
-	get = (key: string): any => this.settings[key as keyof Settings]	
+	get = <K extends keyof Settings>(key: K): any => this._settings[key]	
 
-	set = (key: string, value: never) => this.settings[key as keyof Settings] = value
+	set = <K extends keyof Settings>(key: K, value: Settings[K]) => this._settings[key] = value
 
-	toJSON = (): string => JSON.stringify( this.settings, null, 4 )
+	get settings (): Settings { return this._settings }
+
+	toJSON = (): string => JSON.stringify( this._settings, null, 4 )
 
 	print = () => console.log( '\n' + this.toJSON() )
 }
 
-export const config1 = Object.freeze( new ConfigManager() )
-export const config2 = Object.freeze( new ConfigManager() )
