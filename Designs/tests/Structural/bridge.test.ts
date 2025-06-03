@@ -1,6 +1,6 @@
 import { describe, it } from 'mocha'
 import { assert } from 'chai'
-import sinon, { SinonSpiedInstance, SinonSpy } from 'sinon'
+import sinon from 'sinon'
 import { EmailSender, NormalNotification, PushSender, Recipient, SMSSender, UrgentNotification, N, SENDERS, NotificationSender } from '../../Structural/bridge'
 
 type S = typeof SENDERS[number]

@@ -25,7 +25,7 @@ class MenuComponent {
 }
 
 
-class MenuItem extends MenuComponent {
+export class MenuItem extends MenuComponent {
 
 	public url: string
 	public active: boolean
@@ -38,9 +38,7 @@ class MenuItem extends MenuComponent {
 
 	render = (): string => {
 		return (
-			`<li class="menu-item ${this.active ? 'active' : ''}">
-				<a href="${this.url}">${this.name}</a>
-			</li>`
+			`<li class="menu-item${this.active ? ' active' : ''}"><a href="${this.url}">${this.name}</a></li>`
 		)
 	}
 }
@@ -72,12 +70,12 @@ export class MenuGroup extends MenuComponent {
 
 	render = (): string => {
 		return (
-			`<li class="menu-group ${this.isExpanded ? 'expanded' : 'collapse'}">
-				<span>${this.name}</span>
-				<ul>
-					${ this.children.map(child => child.render()).join('') }
-				</ul>
-			</li>`
+			`<li class="menu-group ${this.isExpanded ? 'expanded' : 'collapse'}">`
+				+ `<span>${this.name}</span>`
+				+ `<ul>`
+					+ this.children.map(child => child.render()).join('') 
+				+ `</ul>`
+			+ `</li>`
 		)
 	};
 
