@@ -22,4 +22,4 @@ const makeSingleton = () => {
 	it('Always return same intance of class', callConstructorMultipleTimes)
 }
 
-describe('Should create a single instance of class', makeSingleton)
+describe( 'Singleton Pattern', () => describe('Should create a single instance of class', makeSingleton) )

@@ -37,7 +37,7 @@ const makesCalculatorAdapter = () => {
 	it('Calls basic but uses new', calculate(adapter))
 }
 
-describe('Adapter pattern',
+describe('Adapter Pattern',
 	() => {
 		describe('Makes basic calculator', makeBasicCalculator)
 		describe('Makes new Calculator', makesNewCalculator)

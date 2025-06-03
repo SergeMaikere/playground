@@ -50,4 +50,4 @@ const employeeMaker = () => {
 	it('Should make an Seller type Employee', makeSeller)
 }
 
-describe('Employee Factory', employeeMaker)
+describe( 'Factory Pattern', () => describe('Employee Factory', employeeMaker) )

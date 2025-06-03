@@ -69,4 +69,4 @@ const buildPerson = () => {
 	it('Should fail to build with invalid password', invalidPassword)
 }
 
-describe('Should build a Person object', buildPerson)
+describe( 'Builder Pattern', () => describe('Should build a Person object', buildPerson) )
