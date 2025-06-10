@@ -2,10 +2,9 @@
 =            COMPOSITE            =
 =================================*/
 
-interface Item { type: string, name: string, url: string, active: boolean }
+interface Item { name: string, url: string, active: boolean }
 
 interface Group {
-	type: string
 	name: string
 	isExpanded: boolean
 	children: ( Item | Group )[]
@@ -62,9 +61,16 @@ export class MenuGroup extends MenuComponent {
 		return this
 	}
 
-	remove = ( component: MenuGroup | MenuItem ): MenuGroup => {
+	get = ( name: string ): MenuItem | MenuGroup => {
+		const component = [ ...this ].find( comp => comp.name === name )
+		if ( !component ) { throw new Error(`No ${name} in MenuGroup ${name}`) }
+		return component
+	}
+	
+	remove = ( name: string ): MenuGroup | MenuItem => {
+		const component = this.get(name)
 		const index = this.children.indexOf(component)
-		if ( index !== -1 ) this.children.splice(index, 1)
+		this.children.splice(index, 1)
 		return this
 	}
 
@@ -92,13 +98,13 @@ export class MenuGroup extends MenuComponent {
 
 export class MenuMaker {
 
-	static create = ( config: Group | Item ): MenuGroup | MenuItem => 'active' in config ? this.createItem(config) : this.createGroup(config)
+	private static create = ( config: Group | Item ): MenuGroup | MenuItem => 'active' in config ? this.createItem(config) : this.createGroup(config)
 
 	private static createItem = ( config: Item ): MenuItem => {
 		return new MenuItem(config.name, config.url, config.active)
 	}
 
-	private static createGroup = ( config: Group ): MenuGroup => {
+	static createGroup = ( config: Group ): MenuGroup => {
 		let menu = new MenuGroup(config.name, config.isExpanded)
 		if ( config.children ) {
 			config.children.forEach( childConfig => menu.children.push(this.create(childConfig)) )

@@ -1,20 +1,88 @@
 import { describe, it } from 'mocha'
 import { assert } from 'chai'
 import { faker } from '@faker-js/faker'
-import { MenuGroup, MenuItem } from '../../Structural/composite'
+import { MenuGroup, MenuItem, MenuMaker } from '../../Structural/composite'
 
-const getName = (): string => faker.lorem.word()
-const getUrl = (): string => faker.internet.url()
-const makeItem = ( name: string = getName(), url: string = getUrl(), active: boolean =  false ) => new MenuItem(name, url, active)
-const makeGroup = ( name: string = getName(), isExpanded: boolean = true ) => new MenuGroup(name, isExpanded)
+interface O {
+	menuName: string,
+	subMenuName: string,
+	itemName1: string,
+	itemUrl1: string,
+	itemName2: string,
+	itemUrl2: string
+}
+
+const makeItem = ( name: string = faker.lorem.word(), active: boolean =  false ) => new MenuItem(name, `www.${name}.com`, active)
+const makeGroup = ( name: string = faker.lorem.word(), isExpanded: boolean = true ) => new MenuGroup(name, isExpanded)
+const makeItemConfig = ( name: string ) => ( {name: name, url: `www.${name}.com`, active: false } )
+
+const makeFilledItem = ( name: string, active: boolean = false ) => {
+	return `<li class="menu-item${active ? ' active' : ''}">`
+		+ `<a href="www.${name}.com">${name}</a>`
+	+ `</li>`
+}
+
+const setActive = ( active: boolean ): string => active ? 'active' : ''
+
+const makeFilledGroup = (): [ string, MenuGroup, O ] => {
+	
+	const [ menuName, subMenuName, itemName1, itemUrl1, itemName2, itemUrl2 ] = [ 
+		faker.lorem.word(), 
+		faker.lorem.word(), 
+		faker.lorem.word(), 
+		faker.internet.url(),
+		faker.lorem.word(),
+		faker.internet.url()
+	]
+
+	const menuGroup = makeGroup(menuName, false)
+	.add(
+		makeGroup(subMenuName)
+		.add(makeItem(itemName1))
+	).add(makeItem(itemName2))
+
+	const rendered = `<li class="menu-group collapse">`
+		+ `<span>${menuName}</span>`
+		+ `<ul>`
+			+ `<li class="menu-group expanded">`
+				+ `<span>${subMenuName}</span>`
+				+ `<ul>`
+					+ makeFilledItem(itemName1)
+				+ `</ul>`
+			+ `</li>`
+			+ makeFilledItem(itemName2)
+		+ `</ul>`
+	+ `</li>`
+	return [ rendered, menuGroup, {menuName, subMenuName, itemName1, itemUrl1, itemName2, itemUrl2} ]
+}
+
+
+const CONFIG = {
+	name: 'AudioTek9000',
+	isExpanded: true,
+	children: [
+		makeItemConfig('HipHop'),
+		makeItemConfig('Pop'),
+		makeItemConfig('World'),
+		{
+			name: 'K-pop',
+			isExpanded: true,
+			children: [
+				makeItemConfig('bts'),
+				makeItemConfig('stray-kids'),
+				makeItemConfig('itzy')
+			]
+		}
+	]
+}
 
 const makesMenuItem = () => assert.instanceOf(makeItem(), MenuItem)
 const makesMenuGroup = () => assert.instanceOf(makeGroup(), MenuGroup)
 
 const rendersMenuItem = () => {
-	const [ name, url ] = [ 'Facebook', 'www.facebook.com' ]
-	const menuItem = makeItem(name, url, true)
-	const rendered = `<li class="menu-item active"><a href="${url}">${name}</a></li>`
+	const name = faker.lorem.word()
+	const menuItem = makeItem(name, true)
+	const rendered = makeFilledItem(name, true)
 
 	assert.equal(menuItem.render(), rendered.trim())
 }
@@ -27,20 +95,17 @@ const rendersMenuGroup = () => {
 	+ `<ul>${ menuGroup.children.map(child => child.render()).join('') }</ul>`
 	+ `</li>`
 
-	assert.equal(menuGroup.render(), rendered.trim() )
+	assert.equal(menuGroup.render(), rendered )
 }
 
 const addsItem = () => {
-	const [ groupName, itemName, url ] = [ 'Products', 'Bio Products', 'www.bioproducts.com' ]
-	const menuGroup = makeGroup('Products')
-	menuGroup.add(makeItem(itemName, url, true))
+	const [ groupName, itemName ] = [ faker.lorem.word(), faker.lorem.word() ]
+	const menuGroup = makeGroup(groupName).add(makeItem(itemName, true))
 
 	const rendered = `<li class="menu-group expanded">`
 		+ `<span>${groupName}</span>`
 		+ `<ul>`
-			+ `<li class="menu-item active">`
-				+ `<a href="${url}">${itemName}</a>`
-			+ `</li>`
+			+ makeFilledItem(itemName, true)
 		+ `</ul>`
 	+ `</li>`
 
@@ -48,28 +113,65 @@ const addsItem = () => {
 }
 
 const addsgroup = () => {
-	const menuName = 'Music'
-	const subMenuName = 'Hard Rock'
-	const [ itemName, itemUrl ] = [ 'Metallica', 'www.black-album.com' ]
+	const [ rendered, menuGroup ] = makeFilledGroup()
+	assert.equal(rendered, menuGroup.render())
+}
 
-	const menuGroup = makeGroup(menuName, false)
-	menuGroup.add(makeGroup(subMenuName).add(makeItem(itemName, itemUrl)))
+const findsChild = () => {
+	const [ _r, menuGroup, names ] = makeFilledGroup()
+	const child = makeItem('Prodigal')
+	const found = menuGroup.add(child).get('Prodigal')
+	assert.deepEqual(child, found)
+}
+
+const removesItem = () => {
+	const [ _r, menuGroup, names ] = makeFilledGroup()
 
 	const rendered = `<li class="menu-group collapse">`
-		+ `<span>${menuName}</span>`
+		+ `<span>${names.menuName}</span>`
 		+ `<ul>`
 			+ `<li class="menu-group expanded">`
-				+ `<span>${subMenuName}</span>`
+				+ `<span>${names.subMenuName}</span>`
 				+ `<ul>`
-					+ `<li class="menu-item">`
-						+ `<a href="${itemUrl}">${itemName}</a>`
-					+ `</li>`
+					+ makeFilledItem(names.itemName1)
 				+ `</ul>`
 			+ `</li>`
 		+ `</ul>`
 	+ `</li>`
+	assert.equal(rendered, menuGroup.remove(names.itemName2).render())
+}
 
-	assert.equal(rendered, menuGroup.render())
+const removesGroup = () => {
+	const [ _r, menuGroup, names ] = makeFilledGroup()
+	const rendered = `<li class="menu-group collapse">`
+		+ `<span>${names.menuName}</span>`
+		+ `<ul>`
+			+ makeFilledItem(names.itemName2)
+		+ `</ul>`
+	+ `</li>`
+	assert.equal(rendered, menuGroup.remove(names.subMenuName).render())
+}
+
+const createsMenu = () => {
+	const menu = MenuMaker.createGroup(CONFIG)
+	const rendered = `<li class="menu-group expanded">`
+		+ `<span>AudioTek9000</span>`
+		+ `<ul>`
+				+ makeFilledItem('HipHop')
+				+ makeFilledItem('Pop')
+				+ makeFilledItem('World')
+				+ `<li class="menu-group expanded">`
+					+ `<span>K-pop</span>`
+					+ `<ul>`
+						+ makeFilledItem('bts')
+						+ makeFilledItem('stray-kids')
+						+ makeFilledItem('itzy')
+					+ `</ul>`
+				+ `</li>`
+		+ `</ul>`
+	+ `</li>`
+
+	assert.equal(rendered, menu.render())
 }
 
 describe('Composite Pattern',
@@ -88,6 +190,15 @@ describe('Composite Pattern',
 				it( 'Renders MenuGroup', rendersMenuGroup )
 				it( 'Adds Menu Items', addsItem )
 				it( 'Adds Menu Groups', addsgroup )
+				it( 'Finds child component', findsChild )
+				it( 'Removes Menu Items', removesItem )
+				it( 'Removes Menu Groups', removesGroup )
+			}
+		)
+
+		describe('Menu',
+			() => {
+				it( 'Creates a menu with config', createsMenu )
 			}
 		)
 	}
