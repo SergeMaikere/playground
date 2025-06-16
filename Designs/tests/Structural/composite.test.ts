@@ -12,6 +12,9 @@ interface O {
 	itemUrl2: string
 }
 
+/*----------  Helpers  ----------*/
+
+
 const makeItem = ( name: string = faker.lorem.word(), active: boolean =  false ) => new MenuItem(name, `www.${name}.com`, active)
 const makeGroup = ( name: string = faker.lorem.word(), isExpanded: boolean = true ) => new MenuGroup(name, isExpanded)
 const makeItemConfig = ( name: string ) => ( {name: name, url: `www.${name}.com`, active: false } )
@@ -21,8 +24,6 @@ const makeFilledItem = ( name: string, active: boolean = false ) => {
 		+ `<a href="www.${name}.com">${name}</a>`
 	+ `</li>`
 }
-
-const setActive = ( active: boolean ): string => active ? 'active' : ''
 
 const makeFilledGroup = (): [ string, MenuGroup, O ] => {
 	
@@ -75,6 +76,10 @@ const CONFIG = {
 		}
 	]
 }
+
+
+
+/*---------- Test Functions  ----------*/
 
 const makesMenuItem = () => assert.instanceOf(makeItem(), MenuItem)
 const makesMenuGroup = () => assert.instanceOf(makeGroup(), MenuGroup)
@@ -174,9 +179,12 @@ const createsMenu = () => {
 	assert.equal(rendered, menu.render())
 }
 
+
+
+/*----------  Main  ----------*/
+
 describe('Composite Pattern',
 	() => {
-
 		describe('Menu Item',
 			() => {
 				it( 'Makes MenuItem', makesMenuItem )
@@ -190,9 +198,9 @@ describe('Composite Pattern',
 				it( 'Renders MenuGroup', rendersMenuGroup )
 				it( 'Adds Menu Items', addsItem )
 				it( 'Adds Menu Groups', addsgroup )
-				it( 'Finds child component', findsChild )
 				it( 'Removes Menu Items', removesItem )
 				it( 'Removes Menu Groups', removesGroup )
+				it( 'Finds child component', findsChild )
 			}
 		)
 

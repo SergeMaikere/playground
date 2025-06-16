@@ -3,56 +3,66 @@
 =            DECORATOR            =
 =================================*/
 
-type Profile = {
-	data:  ProfileData
-	display: () => void
+type D = {
+	timestamp: number
+	value: any
 }
 
-interface ProfileData {
-	name: string
-	email: string
-	profilePic: string
-	bio?: string
-	socials?: string | string[]
+const myFetch = async ( url: URL ): Promise<any> => {
+	const response = await fetch(url)
+	if ( !response.ok ) { throw new Error('API call failed') }
+	return await response.json()
 }
 
+const fetchWithRetry = async ( fn: Function, retry: number = 3, url: URL ) => {
 
-export const getBasicProfile = ( name: string, email: string, profilePic: string ): Profile => {
-	return {
-		data: { name, email, profilePic },
-
-		display: () => {
-			console.log(`Name: ${name}`);
-	        console.log(`Email: ${email}`);
-	        console.log(`Profile Picture: ${profilePic}`);
+	let lastError
+	for (let i = 0; i >= retry; i++) {
+		try {
+			return await myFetch(url)
+		}
+		catch (e) {
+			console.log(`Attempt ${i + 1} failed, retrying...`)
+			lastError = e
+			await waitAbitLonger(i)
 		}
 	}
+
+	throw new Error(`Max retries reached. Last error: ${(lastError as Error).message}`)
 }
 
-export const addBio = (bio: string, profile: Profile): Profile => {
 
-	return {
-		data: { ...profile.data, bio: bio },
+const fetchWithCache = async ( fn: Function, myCache: Vault, url: URL ) => {
+	const cached = myCache.get(url)
+	if ( cached && Date.now() - cached.timestamp < 60000 ) return cached.value
 
-		display: () => {
-			profile.display()
-			console.log(`Bio: ${bio}`)
-		}
+	const result = await fn(url)
+	myCache.add( url, result )
+	return result
+}
+
+const waitAbitLonger = async ( exp: number, delay: number = 300 ) => {
+	return new Promise( resolve => setTimeout(resolve, delay * Math.pow(2, exp)) )
+}
+
+class Vault {
+	static instance: Vault
+	static vault: Map<URL, D> = new Map()
+
+	constructor () {
+		if ( Vault.instance ) return Vault.instance
+		Vault.instance = this
+	}
+
+	add = ( key: URL, data: any ) => Vault.vault.set(key, {value: data, timestamp: Date.now()})
+
+	remove = ( key: URL ) => {
+		if ( Vault.vault.has(key) ) return Vault.vault.delete(key)
+		console.error(`No cachedd data under key:${key}`)
+	}
+
+	get = ( key: URL ) => {
+		if ( Vault.vault.has(key) ) return Vault.vault.get(key)
+		console.error(`No cached data unedr key:${key}`)
 	}
 }
-
-export const addSocialMediaLinks = (socials: string | string[], profile: Profile): Profile => {
-
-	return {
-		data: { ...profile.data, socials },
-
-		display: () => {
-			profile.display()
-			if ( typeof socials === 'string' ) 
-				console.log(`Soclials Medias: ${socials}`)
-			else
-				for ( const social of socials ) console.log(social)
-		}
-	}
-}
-
