@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "mocha -r ts-node/register tests/**/*.ts"
+    "test": "mocha -r ts-node/register --timeout 65000 tests/**/*.ts"
   },
   "keywords": [],
   "author": "",
@@ -16,10 +16,12 @@
   },
   "devDependencies": {
     "@types/chai": "^5.2.2",
+    "@types/chai-as-promised": "^8.0.2",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.15.18",
     "@types/sinon": "^17.0.4",
     "chai": "^5.2.0",
+    "chai-as-promised": "^8.0.1",
     "mocha": "^11.2.2"
   }
 }

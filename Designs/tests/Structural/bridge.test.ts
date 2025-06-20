@@ -66,7 +66,7 @@ const makesNotifications = ( notifierKind: string ) => {
 describe('Bridge Pattern', 
 	() => {
 		describe('Makes senders', makeSender)
-		describe('Makes normal notifications', makesNotifications('normal'))
-		describe('Makes urgent notifications', makesNotifications('urgent'))
+		describe('Makes normal notifications', () => makesNotifications('normal'))
+		describe('Makes urgent notifications', () => makesNotifications('urgent'))
 	}
 )

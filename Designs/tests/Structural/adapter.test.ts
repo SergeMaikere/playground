@@ -22,7 +22,7 @@ const newCalculate = () => {
 const makeBasicCalculator = () => {
 	const basic = new Calculator()
 	it('Create calculator', () => assert.instanceOf(basic, Calculator))
-	it('Performs all basic operations', calculate(basic)) 
+	it('Performs all basic operations', () => calculate(basic)) 
 }
 
 const makesNewCalculator = () => {
@@ -34,7 +34,7 @@ const makesNewCalculator = () => {
 const makesCalculatorAdapter = () => {
 	const adapter = new CalculatorAdapter()
 	it('Creates calculator adapter', () => assert.instanceOf(adapter, CalculatorAdapter))
-	it('Calls basic but uses new', calculate(adapter))
+	it('Calls basic but uses new', () => calculate(adapter))
 }
 
 describe('Adapter Pattern',
