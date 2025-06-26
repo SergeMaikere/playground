@@ -1,5 +1,3 @@
-import { faker } from "@faker-js/faker/."
-
 
 type Post = {
 	userId: number
@@ -35,8 +33,8 @@ type User = {
       	city: string,
       	zipcode: string
       	geo: {
-        	lat: number
-        	lng: number
+        	lat: string
+        	lng: string
       	}
     }
     phone: string
@@ -48,41 +46,53 @@ type User = {
     }
 }
 
-type BlogData = Post | Photo | User | Comment
+export type BlogData = Post | Photo | User | Comment
 
-type InfoType = 'posts' | 'comments' | 'photos' | 'users'
+export type InfoType = 'posts' | 'comments' | 'photos' | 'users'
+
+class API {
+
+	get = async ( url: string ): Promise<BlogData> => {
+		const res = await fetch(url)
+		if ( !res.ok ) { throw new Error('`Unable to Fetch Data, Please check URL or Network connectivity!!') }
+		return await res.json()
+	}
+
+	post = async ( url: string, options: RequestInit ) => {
+		const res = await fetch(url, {method: 'POST', ...options})
+		if ( !res.ok ) { throw new Error('Unable to Post Data, Please check URL or Network connectivity!!') }
+		return await res.json()
+
+	}
+
+	put = async ( url: string, options: RequestInit ) => {
+		const res = await fetch(url, {method: 'PUT', ...options})
+		if ( !res.ok ) { throw new Error('Unable to Update Data, Please check URL or Network connectivity!!') }
+		return await res.json()
+
+	}
+
+	delete = async ( url: string, options: RequestInit ) => {
+		const res = await fetch(url, {method: 'DELETE', ...options})
+		if ( !res.ok ) { throw new Error('Unable to Delete Data, Please check URL or Network connectivity!!') }
+		return await res.json()
+	}
+}
 
 export default class BlogDataFinder {
 
-	type: InfoType
-	url: string
+	private api: API = new API()
+	url: string = 'https://jsonplaceholder.typicode.com'
 
-	constructor ( type: InfoType ) {
-		this.url = 'https://jsonplaceholder.typicode.com'
-		this.type = type
+	get ( type: InfoType, id: number ) {
+		if ( type === 'posts' ) return this.getBlogData('posts', id)
+		if ( type === 'photos' ) return this.getBlogData('photos', id)
+		if ( type === 'comments' ) return this.getBlogData('comments', id)
+		return this.getBlogData('users', id)
 	}
 
-	get (id: number) {
-		if ( this.type === 'posts' ) return this.getBlogData('posts', id)
-		if ( this.type === 'photos' ) return this.getBlogData('photos', id)
-		if ( this.type === 'comments' ) return this.getBlogData('comments', id)
-		if ( this.type === 'users' ) return this.getBlogData('users', id)
-		throw new Error('Unknown type of blog data')
-	}
-
-	private getBlogData = ( type: InfoType, id: number ): Promise<BlogData> => {
-		const url = `${this.url}/${type}/`
-		return this.fetchMe(url, id)
-	}
-
-	private fetchMe = ( url: string, id: number ): Promise<BlogData> => {
-		return fetch(`${url}${id}`)
-		.then( 
-			res => {
-				if ( !res.ok ) { throw new Error('`Unable to Fetch Data, Please check URL or Network connectivity!!') }
-				return res.json()
-			} 
-		)
-		.catch( err => console.error(err) )
+	private getBlogData = async ( type: InfoType, id: number ): Promise<BlogData> => {
+		const url = `${this.url}/${type}/${id}`
+		return await this.api.get(url)
 	}
 }
