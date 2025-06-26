@@ -4,14 +4,13 @@ import * as chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 import sinon, { SinonSandbox } from 'sinon'
 import { fetchWithCache, fetchWithRetry, myFetch, Vault } from '../../Structural/decorator'
-import { curry, timeout } from '../../helper'
+import { curry } from '../../helper'
 
 chai.use(chaiAsPromised)
 const assertAsync = chai.assert
 let sandbox: SinonSandbox
 
 const URL = 'https://jsonplaceholder.typicode.com/posts/1'
-const URL2 = 'https://jsonplaceholder.typicode.com/posts/2'
 const BAD_URL = 'https://jsonplaceholder.typicode.com/posts/youknowimbad'
 const lastError = 'Max retries reached. Last error: API call failed'
 const expectedResult = {
@@ -24,19 +23,11 @@ const expectedResult = {
     'nostrum rerum est autem sunt rem eveniet architecto'
 }
 
-const expectedResult2 = {
-  userId: 1,
-  id: 2,
-  title: 'qui est esse',
-  body: 'est rerum tempore vitae\n' +
-    'sequi sint nihil reprehenderit dolor beatae ea dolores neque\n' +
-    'fugiat blanditiis voluptate porro vel nihil molestiae ut reiciendis\n' +
-    'qui aperiam non debitis possimus qui neque nisi nulla'
-}
 
 const cache = new Vault()
 const myRetryFn = curry(fetchWithRetry)(myFetch, 3)
 const myCacheFn = curry(fetchWithCache)(myFetch, cache)
+const myRetryCacheFn = curry(fetchWithCache)(myRetryFn, cache)
 
 const fetchesData = ( fn: Function, url: string ) => {
 	return async () => {
@@ -47,36 +38,48 @@ const fetchesData = ( fn: Function, url: string ) => {
 
 const throwsError = ( fn: Function, errorMsg: string ) => () => assertAsync.isRejected( fn(BAD_URL), errorMsg )
 
-const retries = async () => {
-	const spy = sandbox.spy(console, 'log')
-	try {
-		await myRetryFn(BAD_URL)
-	} catch (e) {
-		assert.isTrue( spy.calledThrice )
-		assert.isTrue( spy.thirdCall.calledWithExactly('Attempt 3 failed, retrying...') )
+const retries = ( fn: Function, n: number ) => {
+	return async () => {
+		const spy = sandbox.spy(console, 'log')
+		try {
+			await fn(BAD_URL)
+		} catch (e) {
+			assert.equal( spy.callCount, n )
+			assert.isTrue( spy.lastCall.calledWithExactly('Attempt 3 failed, retrying...') )
+		}
 	}
 }
 
-const caches = async () => {
-	const spy = sandbox.spy(cache, 'add')
-	await myCacheFn(URL2)
-	assert.isTrue( spy.calledOnce )
-	assert.isTrue( spy.calledWithExactly( URL2, expectedResult2) )
+const caches = ( fn: Function ) => {
+	return async () => {
+		const spy = sandbox.spy(cache, 'add')
+		
+		cache.remove(URL)
+		await fn(URL)
+		
+		assert.isTrue( spy.calledOnce )
+		assert.isTrue( spy.calledWithExactly( URL, expectedResult) )
+	}
 }
 
-const fetchesFromCache = async() => {
-	const spy = sandbox.spy(console, 'log')
-	await myCacheFn(URL)
-	assert.isTrue( spy.calledOnceWithExactly('Cache Hit for ' + URL) )
+const fetchesFromCache = ( fn: Function ) => {
+	return async () => {
+		const spy = sandbox.spy(console, 'log')
+		await fn(URL)
+		assert.isTrue( spy.calledOnceWithExactly('Cache Hit for ' + URL) )
+	}
 }
 
-const goesBackToAPI = async () => {
-	const clock = sandbox.useFakeTimers(Date.now())
-	const spy = sandbox.spy(console, 'log')
-	timeout(60000)
-	myCacheFn(URL2)
-	assert.isTrue( spy.calledOnceWithExactly('Lets call the API') )
-	await clock.tickAsync(60000)
+const goesBackToAPI = ( fn: Function ) => {
+	return async ()  => {
+		const clock = sandbox.useFakeTimers(Date.now())
+		setTimeout( () => console.log('It has been a minute'), 60000 )
+		clock.tick(60000)
+		
+		const spy = sandbox.spy(console, 'log')
+		fn(URL)
+		assert.isTrue( spy.calledOnceWithExactly('Lets call the API') )
+	}
 }
 
 describe( 'Decorator Pattern',
@@ -93,7 +96,7 @@ describe( 'Decorator Pattern',
 		describe( 'Fetch function with retries',
 			() => {
 				it( 'Fetches the data', fetchesData(myRetryFn, URL) )
-				it( 'Retries when it failes', retries )
+				it( 'Retries when it failes', retries(myRetryFn, 3) )
 				it( 'Throws error when cannot fetch', throwsError(myRetryFn, lastError) )
 			}
 		)
@@ -101,9 +104,20 @@ describe( 'Decorator Pattern',
 		describe( 'Fetch function with cache',
 			() => {
 				it( 'Fetches the data', fetchesData(myCacheFn, URL) )
-				it( 'Caches the newly called data', caches )
-				it( 'Fetches data from cache', fetchesFromCache )
-				it( 'Fetches from API after 1 min', goesBackToAPI )
+				it( 'Caches the newly called data', caches(myCacheFn) )
+				it( 'Fetches data from cache', fetchesFromCache(myCacheFn) )
+				it( 'Fetches from API after 1 min', goesBackToAPI(myCacheFn) )
+			}
+		)
+
+		describe( 'Fetch function with cache and retries', 
+			() => {
+				it( 'fetches the data', fetchesData(myRetryCacheFn, URL) )
+				it( 'Retries when it failes', retries(myRetryCacheFn, 4) )
+				it( 'Throws error when cannot fetch', throwsError(myRetryCacheFn, lastError) )
+				it( 'Caches the newly called data', caches(myRetryCacheFn) )
+				it( 'Fetches data from cache', fetchesFromCache(myRetryCacheFn) )
+				it( 'Fetches from API after 1 min', goesBackToAPI(myRetryCacheFn) )
 			}
 		)
 
