@@ -1,3 +1,15 @@
+import { pick } from "../helper"
+
+interface F {
+	make: string,
+	model: string,
+	processor: string
+}
+
+interface C extends F {
+	memory: string,
+	tag: string
+}
 
 class Flyweight {
 
@@ -5,10 +17,10 @@ class Flyweight {
 	readonly model: string
 	readonly processor: string
 
-	constructor ( make: string, model: string, processor: string ) {
-		this.make = make
-		this.model = model
-		this.processor = processor
+	constructor ( flyweight: F ) {
+		this.make = flyweight.make
+		this.model = flyweight.model
+		this.processor = flyweight.processor
 	}
 
 	print = () => {
@@ -22,28 +34,28 @@ export class FlyweightFactory {
 
 	private static flyweights: {[index: string]: Flyweight} = {}
 
-	static get = ( make: string, model: string, processor: string ): Flyweight => {
-		const index = '' + make + model + processor
+	static get = ( fly: F ): Flyweight => {
+		const index = '' + fly.make + fly.model + fly.processor
 		if ( !this.flyweights[index] ) 
-			this.flyweights[index] = new Flyweight(make, model, processor)
+			this.flyweights[index] = new Flyweight(fly)
 
 		return this.flyweights[index]
 	}
 
-	static count = () => Object.keys(this.flyweights).length
+	static count = (): number => Object.keys(this.flyweights).length
 }
 
-class Computer extends Flyweight {
+export class Computer extends Flyweight {
 
-	private flyweight: Flyweight
+	readonly flyweight: Flyweight
 	readonly memory: string
 	readonly tag: string
 
-	constructor (make: string, model: string, processor: string, memory: string, tag: string) {
-		super(make, model, processor)
-		this.flyweight = FlyweightFactory.get(make, model, processor)
-		this.memory = memory
-		this.tag = tag
+	constructor ( pc: C ) {
+		super(pick(pc, 'make', 'model', 'processor'))
+		this.flyweight = FlyweightFactory.get(pick(pc, 'make', 'model', 'processor'))
+		this.memory = pc.memory
+		this.tag = pc.tag
 	}
 
 	print = () => {
@@ -62,8 +74,8 @@ export class ComputerStock {
 		this.stock = {}
 	}
 
-	add = ( make: string, model: string, processor: string, memory: string, tag: string ) => {
-		this.stock[tag] = new Computer(make, model, processor, memory, tag)
+	add = ( pc: C ) => {
+		this.stock[pc.tag] = new Computer(pc)
 		return this
 	}
 

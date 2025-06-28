@@ -10,6 +10,24 @@ export const curry = (fn: Function) => {
 	return curried
 }
 
+export const pick = ( obj: any, ...props: string[] ) => {
+	return props.reduce(
+		(result: any, prop: string) => {
+			result[prop] = obj[prop]
+			return result
+		},{}
+	)
+}
+
+export const omit = ( obj: any, ...props: string[] ) => {
+	return Object.keys(obj).reduce(
+		(result: any, key ) => {
+			if ( !props.includes(key) ) result[key] = obj[key]
+			return result
+		}, {}
+	)
+}
+
 export const voyeur = (name: string, x: any): any => {
 	console.log('\n' + name.toUpperCase())
 	console.group()
