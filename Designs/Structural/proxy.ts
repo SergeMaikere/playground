@@ -3,13 +3,16 @@ type User = { name: string, role: 'admin' | 'user' | 'guest' }
 
 type Operation = 'write' | 'read' | 'delete'
 
+
 class DocumentService {
+	protected service: Map<string, string> = new Map()
 
-	private service: Map<string, string>
+	add = ( filename: string, content: string ) => {}
+	get = ( filename: string ) => {}
+	remove = ( filename: string ) => {}
+}
 
-	constructor () {
-		this.service = new Map()
-	}
+class RealDocumentService extends DocumentService {
 
 	add = ( filename: string, content: string ) => {
 		console.log(`Adding document ${filename} to database`)
@@ -27,13 +30,16 @@ class DocumentService {
 	}
 }
 
-export class DocumentServiceProxy {
 
-	private service: DocumentService
+
+export class DocumentServiceProxy extends DocumentService {
+
+	private realDocument: RealDocumentService
 	private user: User
 
 	constructor ( user: User ) {
-		this.service = new DocumentService()
+		super()
+		this.realDocument = new RealDocumentService()
 		this.user = user
 	}
 
@@ -50,16 +56,16 @@ export class DocumentServiceProxy {
 
 	add = ( filename: string, content: string ) => {
 		this.checkPermisssion('write')
-		this.service.add(filename, content)
+		this.realDocument.add(filename, content)
 	}
 
 	get = ( filename: string ) => {
 		this.checkPermisssion('read')
-		return this.service.get(filename)
+		return this.realDocument.get(filename)
 	}
 
 	delete = ( filename: string ) => {
 		this.checkPermisssion('delete')
-		this.service.delete(filename)
+		this.realDocument.delete(filename)
 	}
 }
