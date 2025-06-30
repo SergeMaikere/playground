@@ -1,8 +1,9 @@
 
-type User = { name: string, role: 'admin' | 'user' | 'guest' }
+export type Role = 'admin' | 'user' | 'guest'
 
-type Operation = 'write' | 'read' | 'delete'
+export type User = { name: string, role: Role }
 
+export type Operation = 'write' | 'read' | 'delete'
 
 class DocumentService {
 	protected service: Map<string, string> = new Map()
@@ -10,9 +11,10 @@ class DocumentService {
 	add = ( filename: string, content: string ) => {}
 	get = ( filename: string ) => {}
 	remove = ( filename: string ) => {}
+	count = () => {}
 }
 
-class RealDocumentService extends DocumentService {
+export class RealDocumentService extends DocumentService {
 
 	add = ( filename: string, content: string ) => {
 		console.log(`Adding document ${filename} to database`)
@@ -21,15 +23,16 @@ class RealDocumentService extends DocumentService {
 
 	get = ( filename: string ) => {
 		console.log(`Fetching document ${filename} from database`)
-		this.service.get(filename)
+		return this.service.get(filename)
 	}
 
 	delete = ( filename: string ) => {
 		console.log(`Deleting document ${filename} from database`)
 		this.service.delete(filename)
 	}
-}
 
+	count = () => this.service.size
+}
 
 
 export class DocumentServiceProxy extends DocumentService {
@@ -68,4 +71,6 @@ export class DocumentServiceProxy extends DocumentService {
 		this.checkPermisssion('delete')
 		this.realDocument.delete(filename)
 	}
+
+	count = () => this.realDocument.count()
 }
