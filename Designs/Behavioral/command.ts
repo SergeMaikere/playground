@@ -5,7 +5,7 @@
 
 /*----------  Commands  ----------*/
 
-interface Command {
+export interface Command {
 	execute: (n1: number, n2: number) => number
 	undo: (n1: number, n2: number) => number
 	value: number
@@ -71,13 +71,8 @@ class Operations {
 
 export class Calculator {
 
-	private commands: Command[]
-	private current: number
-
-	constructor () {
-		this.commands = []
-		this.current = 0
-	}
+	private commands: Command[] = []
+	private current: number = 0
 
 	execute = ( command: Command ) => {
 		this.current = command.execute(this.current, command.value)
