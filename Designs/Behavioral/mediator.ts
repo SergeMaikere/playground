@@ -1,5 +1,24 @@
 import { faker } from "@faker-js/faker"
 
+/*================================
+=            MEDIATOR            =
+================================*/
+
+
+/**
+ *
+ * The Mediator pattern provides central authority over a group of objects
+ * by encapsulating how these objects interact. This model is useful for 
+ * scenarios where there is a need to manage complex conditions in which 
+ * every object is aware of any state change in any other object in the group.
+ *
+ */
+
+
+
+
+/*----------  Mediator  ----------*/
+
 export class Chatroom {
 
 	private participants: Map<string, Participant>
@@ -20,10 +39,15 @@ export class Chatroom {
 		return this
 	}
 
+	userCount = () => this.participants.size
+
 	private broadcast = ( message: string, from: Participant ) => {
 		this.participants.forEach( p => p !== from && p.receive(message, from) )
 	}
 }
+
+
+/*----------  Collegues  ----------*/
 
 export class Participant {
 
@@ -38,7 +62,7 @@ export class Participant {
 	}
 
 	send = ( message: string, to: Participant | null = null ) => {
-		if ( !this.chatroom ) return console.log(`${this.name} is not registerd to a chatroom`)
+		if ( !this.chatroom ) return console.error(`${this.name} is not registerd to a chatroom`)
 		this.chatroom.send(message, this, to)
 		return this
 	}
