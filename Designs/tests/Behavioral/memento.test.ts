@@ -1,6 +1,6 @@
 import { describe, it } from 'mocha'
 import { assert } from 'chai'
-import { Dude, DudeBackUp, DudeFacade } from '../../Behavioral/memento'
+import { Dude, DudeBackUp } from '../../Behavioral/memento'
 import { faker } from '@faker-js/faker'
 import Sinon from 'sinon'
 
@@ -27,7 +27,6 @@ export const getRandomDude = () => {
 const dude = getRandomDude()
 const json = JSON.stringify(dude.userInfo())
 const careTaker = new DudeBackUp()
-const dudeFacade = new DudeFacade()
 
 const makesMemento = () => {
 	const expected = {key: dude.id, json}

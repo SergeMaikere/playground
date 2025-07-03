@@ -85,23 +85,5 @@ export class DudeBackUp {
 	}
 }
 
-/*----------  Client  ----------*/
-export class DudeFacade {
-
-	private backup: DudeBackUp
-
-	constructor () {
-		this.backup = new DudeBackUp()
-	}
-
-	build = ( dude: Dude ) => {
-		if ( !dude.build() ) return
-		this.backup.add(dude.createMemento())
-	}
-
-	rollBack = ( dude: Dude ) => dude.restoreMemento(this.backup.get(dude.id)) 
-
-	print = () => this.backup.print()
-}
 
 
