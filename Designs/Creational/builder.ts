@@ -30,16 +30,16 @@ export type UserInput = {
 
 export class Person {
 	readonly id: string
-	protected firstName: string
-	protected lastName: string
-	protected email: string
-	protected password: string
-	protected birthday: Date | null
-	protected address: string | null
-	protected contact_No: string | null
-	protected shopAddress: string | null
-	protected key: string | null
-	protected isBuild: boolean
+	firstName: string
+	lastName: string
+	email: string
+	password: string
+	birthday: Date | null
+	address: string | null
+	contact_No: string | null
+	shopAddress: string | null
+	key: string | null
+	isBuild: boolean
 
 	constructor (userInfo: User) {
 		this.id = faker.string.nanoid()

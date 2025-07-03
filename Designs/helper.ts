@@ -1,4 +1,5 @@
 import { faker } from "@faker-js/faker";
+import { Person } from "./Creational/builder";
 
 export const pipe = (...fns: Function[]) => (args: any) => fns.reduce( (g, f) => f(g), args )
 
@@ -38,7 +39,7 @@ export const voyeur = (name: string, x: any): any => {
 
 export const errorHandler = ( message: string ) => { 
 	console.error(message) 
-	return undefined
+	return null
 }
 
 export const timeout = ( ms: number ) => new Promise( resolve => setTimeout(resolve, ms) )

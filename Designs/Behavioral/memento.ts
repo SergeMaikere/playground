@@ -1,23 +1,42 @@
-import { Person, User } from '../Creational/builder'
+import { Person, User, UserInput } from '../Creational/builder'
 import { errorHandler } from '../helper'
 
+
+/*=======================================
+=            MEMENTO PATTERN            =
+=======================================*/
+
+/**
+ *
+ * A behavioral design pattern in JavaScript called Memento focuses on 
+ * externalizing and capturing an object's internal state so that 
+ * it can later be restored. When you need to add features like undo/redo functionality, 
+ * history tracking, or reverting an item to a former state, this pattern is quite helpful.
+ *
+ */
+
+
+
+/*----------  Memento  ----------*/
 type memento = {timestamp: number, json: string}
 
+
+/*----------  Originator  ----------*/
 export class Dude extends Person {
 
 	constructor (userInfo: User) {
 		super(userInfo)
 	}
 
-	hydrate = () => {
+	createMemento = () => {
 		if ( !this.isBuild ) errorHandler('Person data are not valid')
 		return {key: this.id, json: JSON.stringify(this.userInfo())}
 	}
 
-	dehydrate = ( userJSON: string | undefined ) => {
+	restoreMemento = ( userJSON: string | null ) => {
 		if ( !userJSON ) return errorHandler('Unable to find backup')
 
-		const userInfo = JSON.parse(userJSON)
+		const userInfo: UserInput = JSON.parse(userJSON)
 
 		this.firstName = userInfo.firstName
 		this.lastName = userInfo.lastName
@@ -34,39 +53,39 @@ export class Dude extends Person {
 	}
 }
 
-class DudeBackUp {
+/*----------  Caretaker  ----------*/
 
-	mementos: { [user: string]: memento[] }
+export class DudeBackUp {
 
-	constructor () {
-		this.mementos = {}
-	}
+	mementos: Map<string, memento[]> = new Map()
 
 	add = ( user: {key: string ,json: string} ) => {
-		this.mementos[user.key] = [ ...this.mementos[user.key], { timestamp: Date.now(), json: user.json } ]
+		this.mementos.set( user.key, this.addNewBackup(user) )
 		return true
 	}
 
-	get = ( user: string ) => {
-		const result = this.mementos[user]?.pop()
-		if ( !result ) return errorHandler('There are no backup for this user ' + user)
-		return result.json
+	get = ( key: string | null ) => {
+		if ( !key || !this.mementos.has(key) ) return errorHandler('There are no backup for this user ' + key)
+		const result = (this.mementos.get(key) as memento[]).pop()
+		return (result as memento).json
 	}
 
-	index = () => {
+	print = () => {
 		if ( this.isEmpty() ) return errorHandler('DudeBackup is empty')
 		console.log('\nDudeBackup')
-		for (const user in this.mementos) {
-			console.log('\n', user)
-			this.mementos[user].forEach( m => console.log(m) )
-		}
+		this.mementos.forEach( user => user.forEach(m => console.log(m.json)) )
 		return true
 	}
 
-	private isEmpty = () => Object.keys(this.mementos).every( user => !this.mementos.hasOwnProperty(user) )
+	private isEmpty = () => [ ...this.mementos.keys() ].length === 0  || [ ...this.mementos.values() ].every( user => user.length === 0 )
+
+	private addNewBackup = ( user: {key: string ,json: string} ) => {
+		const backup = { timestamp: Date.now(), json: user.json }
+		return this.mementos.has(user.key) ? [ ...this.mementos.get(user.key) as memento[], backup ] : [ backup ]
+	}
 }
 
-
+/*----------  Client  ----------*/
 export class DudeFacade {
 
 	private backup: DudeBackUp
@@ -77,12 +96,12 @@ export class DudeFacade {
 
 	build = ( dude: Dude ) => {
 		if ( !dude.build() ) return
-		this.backup.add(dude.hydrate())
+		this.backup.add(dude.createMemento())
 	}
 
-	rollBack = ( dude: Dude ) => dude.dehydrate(this.backup.get(dude.id)) 
+	rollBack = ( dude: Dude ) => dude.restoreMemento(this.backup.get(dude.id)) 
 
-	print = () => this.backup.index()
+	print = () => this.backup.print()
 }
 
 
