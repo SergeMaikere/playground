@@ -1,15 +1,20 @@
 import { timeout } from "../helper"
 
-class Light {
-	trafficLight: TrafficLight
+/*=====================================
+=            STATE PATTERN            =
+=====================================*/
 
-	constructor (tLight: TrafficLight) {
-		this.trafficLight = tLight
-	}
+/**
+ *
+ * The State Pattern is a behavioral design pattern that allows an object 
+ * to change its behavior when its internal state changes. The pattern encapsulates 
+ * state-specific behavior into separate state objects and delegates the execution 
+ * to the current state object.
+ *
+ */
 
-	go = async () => await timeout(3000) 
-}
 
+/*----------  Context  ----------*/
 export class TrafficLight {
 	private count: number
 	private currentState: Light
@@ -27,6 +32,18 @@ export class TrafficLight {
 	}
 
 	start = async () => await this.currentState.go()
+}
+
+
+/*----------  States  ----------*/
+class Light {
+	trafficLight: TrafficLight
+
+	constructor (tLight: TrafficLight) {
+		this.trafficLight = tLight
+	}
+
+	go = async () => await timeout(5000) 
 }
 
 class RedLight extends Light {

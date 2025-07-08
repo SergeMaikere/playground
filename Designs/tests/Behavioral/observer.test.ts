@@ -31,6 +31,7 @@ const getsNotified = () => {
 	assert.isTrue( spy.firstCall.calledWithExactly(`${smartphone.name}: Temperature is 22°C`) )
 	assert.isTrue( spy.secondCall.calledWithExactly(`${tablet.name}: Temperature is 22°C`) )
 	assert.isTrue( spy.thirdCall.calledWithExactly(`${smartTv.name}: Temperature is 22°C`) )
+	spy.restore()
 }
  
 describe( 'Observer Parttern', 
