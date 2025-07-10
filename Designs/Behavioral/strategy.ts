@@ -1,11 +1,17 @@
-import { curry, errorHandler, pipe, voyeur } from '../helper'
+import { curry, errorHandler, pipe } from '../helper'
 import { bubbleSort, insertionSort, mergeSort, quickSort, selectionSort } from './sort'
+
+/*========================================
+=            STRATEGY PATTERN            =
+========================================*/	
 
 const STRATEGIES = [ 'bubble', 'selection', 'insertion', 'quick', 'merge'  ] as const
 
 type SortStrategyList = typeof STRATEGIES[number]
 
-class StrategiesManager {
+
+/*----------  Context  ----------*/
+export class StrategiesManager {
 
 	private strategies: Strategy[]
 	constructor () {
@@ -18,9 +24,12 @@ class StrategiesManager {
 	}
 
 	get = ( name: string ) => this.strategies.find( strat => strat.name === name )
+
+	count = () => this.strategies.length
 }
 
-class Strategy {
+/*----------  Abstract Strategy  ----------*/
+export class Strategy {
 	readonly name: string
 	private handler: any
 
@@ -43,7 +52,8 @@ class Strategy {
 }
 
 
-class SortStrategyMaker {
+/*----------  Concrete Strategy Factory  ----------*/
+class SortStrategyFactory {
 
 	static get = ( name: SortStrategyList ) => {
 		if ( name === 'bubble' ) return new Strategy('bubble', bubbleSort)
@@ -61,7 +71,7 @@ const getRandomNumbersArray = () => [ ...Array(20) ].map( _item => Math.ceil(Mat
 export const run = () => {
 	const sManager = new StrategiesManager()
 	
-	const makeStrategies = ( arr: SortStrategyList[] ) => arr.map( sName => SortStrategyMaker.get(sName) as Strategy )
+	const makeStrategies = ( arr: SortStrategyList[] ) => arr.map( sName => SortStrategyFactory.get(sName) as Strategy )
 	
 	const addToManager = curry( (sManager: StrategiesManager, arr: Strategy[]) => arr.map(s => sManager.add(s)) )(sManager)
 	
