@@ -1,5 +1,4 @@
 import { faker } from "@faker-js/faker";
-import { Person } from "./Creational/builder";
 
 export const pipe = (...fns: Function[]) => (args: any) => fns.reduce( (g, f) => f(g), args )
 
@@ -29,7 +28,7 @@ export const omit = ( obj: any, ...props: string[] ) => {
 	)
 }
 
-export const voyeur = (name: string, x: any): any => {
+export const voyeur = (x: any, name: string = 'VOYEUR'): any => {
 	console.log('\n' + name.toUpperCase())
 	console.group()
 	console.log(x)

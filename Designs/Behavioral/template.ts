@@ -1,5 +1,8 @@
-import { faker } from "@faker-js/faker/."
-import { errorHandler, getArrayRandomNumbers, getArrayRandomTexts, pipe } from "../helper"
+import { errorHandler, getArrayRandomNumbers, getArrayRandomTexts, pipe, voyeur } from "../helper"
+
+/*========================================
+=            TEMPLATE PATTERN            =
+========================================*/
 
 
 interface ProcessedFormated {
@@ -22,6 +25,9 @@ class DataProcessor {
 		)(data)
 	}
 
+	isStorable: boolean = false
+	isFormatable: boolean = false
+
 	protected validate = ( data: any ): any => {
 		throw new Error('Method validate must be implemented')
 	}
@@ -31,10 +37,9 @@ class DataProcessor {
 	}
 
 	protected format = ( data: any ): any => {
+		if ( !data || !this.isFormatable ) return data
 		console.log('Formating data: ', data)
-
-		//Implement formatting protocol
-		return { formated: data, timestamp: Date.now(), stored: false }
+		return { formated: JSON.stringify(data), timestamp: Date.now(), stored: false }
 	}
 
 	protected store = ( data: any ) => {
@@ -44,8 +49,6 @@ class DataProcessor {
 		//Implement storage protocol
 		return { ...data, stored: true } 
 	}
-
-	protected isStorable: boolean = true
 
 	protected notifySuccess = ( data: any ): any => {
 		if ( !data ) return errorHandler('Data process was a failure')
@@ -57,22 +60,23 @@ class DataProcessor {
 
 /*----------  Concrete classes  ----------*/
 
-class NumberProcessor extends DataProcessor {
+export class NumberProcessor extends DataProcessor {
 
-	validate = ( data: number[] ): undefined | number[] => {
-		if ( !Array.isArray(data) || data.some(n => typeof n !== 'number') ) errorHandler('Input must be an array of numbers')
+	validate = ( data: number[] ): null | number[] => {
+		if ( !Array.isArray(data) || data.some(n => typeof n !== 'number') ) return errorHandler('Input must be an array of numbers')
 		return data
 	}
 
 	process = ( data: number[] | undefined ): { [key: string]: number } | undefined => {
 		if ( !data ) return data
 
+		const count = data.length
 		const sum = data.reduce( (total, n) => total + n, 0 )
-		const avg = sum / data.length
+		const avg = sum / count
 		const min = Math.min(...data)
 		const max = Math.max(...data)
 
-		return { sum, avg, min, max, count: data.length }
+		return { sum, avg, min, max, count}
 	}
 
 }
@@ -82,7 +86,7 @@ class TextProcessor extends DataProcessor {
 
 	isStorable = false
 
-	validate = ( data: string[] ): string[] | undefined => {
+	validate = ( data: string[] ): string[] | null => {
 		if ( !Array.isArray(data) || data.some(t => typeof t !== 'string') ) 
 			return errorHandler('Input must be an array of strings')
 
@@ -99,7 +103,6 @@ class TextProcessor extends DataProcessor {
 		return { wordCount, charCount, longestString, avgLength: charCount / data.length, texts: data.length }
 	}
 }
-
 
 export const run = () => {
 	const numberProcessor = new NumberProcessor()
