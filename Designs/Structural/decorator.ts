@@ -2,6 +2,16 @@
 =            DECORATOR            =
 =================================*/
 
+/**
+ *
+ * The Decorator pattern extends (decorates) an object’s behavior dynamically.
+ * The ability to add new behavior at runtime is accomplished by a Decorator object 
+ * which ‘wraps itself’ around the original object. Multiple decorators can 
+ * add or override functionality to the original object.
+ *
+ */
+
+
 import { timeout } from "../helper"
 
 type D = {
@@ -9,12 +19,15 @@ type D = {
 	value: any
 }
 
+/*----------  Component  ----------*/
 export const myFetch = async ( url: string ): Promise<any> => {
 	const response = await fetch(url)
 	if ( !response.ok ) { throw new Error('API call failed') }
 	return await response.json()
 }
 
+
+/*----------  Decorator  ----------*/
 export const fetchWithRetry = async ( fn: Function, retry: number, url: string ) => {
 	let lastError
 	for (let i = 0; i < retry; i++) {
@@ -28,7 +41,6 @@ export const fetchWithRetry = async ( fn: Function, retry: number, url: string )
 	}
 	throw new Error(`Max retries reached. Last error: ${(lastError as Error).message}`)
 }
-
 
 export const fetchWithCache = async ( fn: Function, cache: Vault, url: string ) => {
 	const cached = cache.get(url)
@@ -44,6 +56,8 @@ export const fetchWithCache = async ( fn: Function, cache: Vault, url: string ) 
 	return result
 }
 
+
+/*----------  Utils  ----------*/
 const itsOnlyBeenAFewSeconds = ( timestamp: number, max: number = 60000 ) => Date.now() - timestamp < max
 
 const waitAbitLonger = async ( exp: number, delay: number = 300 ) => {

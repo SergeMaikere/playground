@@ -5,6 +5,16 @@ import { errorHandler, getArrayRandomNumbers, getArrayRandomTexts, pipe, voyeur 
 ========================================*/
 
 
+/**
+ *
+ * The Template Method pattern provides an outline of a series of steps 
+ * for an algorithm. Objects that implement these steps retain the original 
+ * structure of the algorithm but have the option to redefine or adjust 
+ * certain steps. This pattern is designed to offer extensibility to the client developer.
+ *
+ */
+
+
 interface ProcessedFormated {
 	formated: any,
 	timestamp: number,

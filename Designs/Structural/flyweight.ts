@@ -1,5 +1,14 @@
 import { pick } from "../helper"
 
+/**
+ *
+ * The Flyweight pattern conserves memory by sharing large numbers of fine-grained 
+ * objects efficiently. Shared flyweight objects are immutable, that is,
+ * they cannot be changed as they represent the characteristics that are shared with other objects.
+ *
+ */
+
+
 interface F {
 	make: string,
 	model: string,
@@ -10,6 +19,7 @@ interface C extends F {
 	memory: string,
 	tag: string
 }
+
 
 class Flyweight {
 

@@ -5,6 +5,17 @@ import { bubbleSort, insertionSort, mergeSort, quickSort, selectionSort } from '
 =            STRATEGY PATTERN            =
 ========================================*/	
 
+
+/**
+ *
+ * The Strategy pattern encapsulates alternative algorithms (or strategies) 
+ * for a particular task. It allows a method to be swapped out at runtime 
+ * by any other method (strategy) without the client realizing it. Essentially,
+ * Strategy is a group of algorithms that are interchangeable.
+ *
+ */
+
+
 const STRATEGIES = [ 'bubble', 'selection', 'insertion', 'quick', 'merge'  ] as const
 
 type SortStrategyList = typeof STRATEGIES[number]

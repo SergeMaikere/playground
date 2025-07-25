@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "mocha -r ts-node/register tests/Behavioral/*.ts"
+    "test": "mocha -r ts-node/register tests/**/*.ts"
   },
   "keywords": [],
   "author": "",

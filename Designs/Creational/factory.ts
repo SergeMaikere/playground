@@ -3,6 +3,17 @@ import { UserInput, User } from "./builder"
 =            FACTORY METHOD            =
 ======================================*/
 
+/**
+ *
+ * The key objective of the Factory Method is extensibility. Factory Methods are frequently 
+ * used in applications that manage, maintain, or manipulate collections of objects that 
+ * are different but at the same time have many characteristics (i.e. methods and properties) in common. 
+ * An example would be a collection of documents with a mix of Xml documents, Pdf documents, and Rtf documents.
+
+
+ *
+ */
+
 
 interface AdminInput extends User { key: string }
 interface SellerInput extends User { shopAddress: string, contact_No: string }

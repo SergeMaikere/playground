@@ -2,6 +2,15 @@
 =            COMPOSITE            =
 =================================*/
 
+/**
+ *
+ * The Composite pattern allows the creation of objects with properties that 
+ * are primitive items or a collection of objects. Each item in the collection 
+ * can hold other collections themselves, creating deeply nested structures.
+ *
+ */
+
+
 interface Item { name: string, url: string, active: boolean }
 
 interface Group {
@@ -9,6 +18,8 @@ interface Group {
 	isExpanded: boolean
 	children: ( Item | Group )[]
 }
+
+/*----------  Component  ----------*/
 
 class MenuComponent {
 
@@ -24,6 +35,7 @@ class MenuComponent {
 }
 
 
+/*----------  Leaf  ----------*/
 export class MenuItem extends MenuComponent {
 
 	public url: string
@@ -43,6 +55,7 @@ export class MenuItem extends MenuComponent {
 }
 
 
+/*----------  Composite  ----------*/
 export class MenuGroup extends MenuComponent {
 
 	public children: (MenuGroup | MenuItem)[]
@@ -95,7 +108,7 @@ export class MenuGroup extends MenuComponent {
 	}
 }
 
-
+/*----------  Client  ----------*/
 export class MenuMaker {
 
 	private static create = ( config: Group | Item ): MenuGroup | MenuItem => 'active' in config ? this.createItem(config) : this.createGroup(config)
