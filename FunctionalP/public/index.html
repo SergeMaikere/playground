@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="./output.css" rel="stylesheet">
+	<title>New Playground !</title>
+</head>
+<body class="font-poiret text-jet text-lg font-semibold bg-ivory">
+	<div class="grid grid-rows-6 gap-9 min-h-screen p-9 justify-items-center">
+		<section class="row-span-1 shadow-md justify-items-center content-center justify-self-stretch shadow-avocado">
+			<h1 class="md:text-3xl 2xl:text-5xl text-avocado font-bruno uppercase">Functional Programming for dummies</h1>
+		</section>
+		<main class="row-span-5 flex flex-col gap-6 max-w-7xl">
+			<section class="">
+				<h3 class="text-2xl p-6">Leave a message !</h3>
+				<div class="grid grid-cols-6 gap-6">
+					<input class="col-span-5 px-6 py-3 outline-1 outline-jet" type="text" name="message" id="msg">
+					<button id="msg-button" class="col-span-1 bg-office-red text-ivory p-3 cursor-pointer" type="button">Send</button>
+				</div>
+			</section>
+
+			<section class="p-9">
+				<div class="flex flex-col gap-3 bg-avocado p-6" id="messages"></div>
+				
+			</section>
+		</main>
+	</div>
+	<script type="module" src="./list.mjs"></script>
+</body>
+</html>
