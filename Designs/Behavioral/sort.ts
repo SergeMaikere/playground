@@ -12,7 +12,7 @@ const reverse = [9, 8, 7, 6, 5, 4, 3, 2, 1]
  * @param      {number[] | string[]}  arr     The arr
  * @return     {number[] | string[]}  sorted array
  */
-export const bubbleSort = arr => {
+export const bubbleSort = ( arr: number[] ): number[] => {
 	let n = arr.length, swapped
 
 	for (let i = 0; i < n; i++) {
@@ -50,7 +50,7 @@ export const bubbleSort = arr => {
  * @param      {number[] | string[]}  arr     The arr
  * @return     {number[] | string[]}  sorted array
  */
-export const selectionSort = arr => {
+export const selectionSort = ( arr: number[] ): number[] => {
 	let n = arr.length, min
 
 	for (let i = 0; i < n; i++) {
@@ -83,7 +83,7 @@ export const selectionSort = arr => {
  * @param      {number[] | string[]}  arr     The arr
  * @return     {number[] | string[]}  sorted array
  */
-export const insertionSort = arr => {
+export const insertionSort = ( arr: number[] ): number[] => {
 	let n = arr.length, val, j
 
 	for (let i = 1; i < n; i++) {
@@ -115,7 +115,7 @@ export const insertionSort = arr => {
  * @param      {number[] | string[]}  arr     The arr
  * @return     {number[] | string[]}  sorted array
  */
-export const mergeSort = arr => {
+export const mergeSort = ( arr: number[] ): number[] => {
 	if ( arr.length <= 1 ) return arr
 	const mid = Math.floor( arr.length / 2 )
 	const left = mergeSort(arr.slice(0, mid))
@@ -123,20 +123,20 @@ export const mergeSort = arr => {
 	return merge(left, right)
 }
 
-const merge = ( left, right ) => {
-	let [ result, l, r ] = [ [], 0, 0 ]
+const merge = ( left: number[], right: number[] ): number[] => {
+	let [ result, l, r ] = [ [] as number[], 0, 0 ]
 	while ( l < left.length && r < right.length ) {
-		if ( left[l] < right[r] ) {
+		if ( left[l] <= right[r] ) {
 			result.push(left[l])
 			l++
 		}
 
-		if ( right[r] < left[l] ) {
+		if ( left[l] > right[r] ) {
 			result.push(right[r])
 			r++
 		}
 	}
-	return result.concat( left.slice(l), right.slice(r) )
+	return [ ...result, ...left.slice(l), ...right.slice(r) ]
 }
 
 // console.log( mergeSort([38, 27, 43, 3, 9, 82, 10]) )
@@ -159,12 +159,12 @@ const merge = ( left, right ) => {
  * @param      {number[] | string[]}  arr     The arr
  * @return     {number[] | string[]}   sorted array
  */
-export const quickSort = arr => {
+export const quickSort = ( arr: number[] ): number[] => {
 	if ( arr.length <= 1 ) return arr
-	let [ left, right, pivot ] = [ [], [], arr[arr.length - 1] ]
+	let [ left, right, pivot ] = [ [] as number[], [] as number[], arr[arr.length - 1] ]
 	
 	for (let i = 0; i < arr.length - 1; i++) {
-		if ( arr[i] < pivot ) left.push(arr[i])
+		if ( arr[i] <= pivot ) left.push(arr[i])
 		if ( arr[i] > pivot ) right.push(arr[i])
 	}
 	return [ ...quickSort(left), pivot, ...quickSort(right) ]

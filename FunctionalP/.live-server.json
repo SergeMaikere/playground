@@ -1,0 +1,6 @@
+
+
+{
+	"root": "/public", // Set root directory that's being served. Defaults to cwd.
+};
+

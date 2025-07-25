@@ -1,0 +1,7 @@
+{
+	"open": false,
+	"server": {
+		"files": [ "./**/*.{html,htm,css,js, mjs}" ],
+		"baseDir": "./public"
+	}
+}
