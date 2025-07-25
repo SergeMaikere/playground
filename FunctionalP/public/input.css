@@ -1,0 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Bruno+Ace+SC&family=Poiret+One&display=swap');
+@import "tailwindcss";
+
+@theme {
+	--font-bruno: "Bruno Ace SC", serif;
+	--font-poiret: "Poiret One", serif;
+
+	--color-ivory: #fffce8;
+	--color-jet: #3e363f;
+	--color-avocado: #697A21;
+	--color-old-gold: #B8B42D;
+	--color-office-red: #DD403A;
+}

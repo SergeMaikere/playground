@@ -12,7 +12,7 @@ const reverse = [9, 8, 7, 6, 5, 4, 3, 2, 1]
  * @param      {number[] | string[]}  arr     The arr
  * @return     {number[] | string[]}  sorted array
  */
-const bubbleSort = arr => {
+export const bubbleSort = arr => {
 	let n = arr.length, swapped
 
 	for (let i = 0; i < n; i++) {
@@ -50,7 +50,7 @@ const bubbleSort = arr => {
  * @param      {number[] | string[]}  arr     The arr
  * @return     {number[] | string[]}  sorted array
  */
-const selectionSort = arr => {
+export const selectionSort = arr => {
 	let n = arr.length, min
 
 	for (let i = 0; i < n; i++) {
@@ -83,7 +83,7 @@ const selectionSort = arr => {
  * @param      {number[] | string[]}  arr     The arr
  * @return     {number[] | string[]}  sorted array
  */
-const insertionSort = arr => {
+export const insertionSort = arr => {
 	let n = arr.length, val, j
 
 	for (let i = 1; i < n; i++) {
@@ -115,7 +115,7 @@ const insertionSort = arr => {
  * @param      {number[] | string[]}  arr     The arr
  * @return     {number[] | string[]}  sorted array
  */
-const mergeSort = arr => {
+export const mergeSort = arr => {
 	if ( arr.length <= 1 ) return arr
 	const mid = Math.floor( arr.length / 2 )
 	const left = mergeSort(arr.slice(0, mid))
@@ -159,13 +159,13 @@ const merge = ( left, right ) => {
  * @param      {number[] | string[]}  arr     The arr
  * @return     {number[] | string[]}   sorted array
  */
-const quickSort = arr => {
+export const quickSort = arr => {
 	if ( arr.length <= 1 ) return arr
 	let [ left, right, pivot ] = [ [], [], arr[arr.length - 1] ]
 	
 	for (let i = 0; i < arr.length - 1; i++) {
 		if ( arr[i] < pivot ) left.push(arr[i])
-		if ( pivot < arr[i] ) right.push(arr[i])
+		if ( arr[i] > pivot ) right.push(arr[i])
 	}
 	return [ ...quickSort(left), pivot, ...quickSort(right) ]
 }
