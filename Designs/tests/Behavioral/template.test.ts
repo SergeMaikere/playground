@@ -47,7 +47,7 @@ describe( 'Template Pattern',
 		it( 'Porcesses numbers', processNumbers )
 		it( 'formates result', formates )
 		it( 'Stores result', stores )
-		// it( 'Notifies success', notifies )
+		it( 'Notifies success', notifies )
 
 		afterEach( () => sandbox.restore() )
 	}

@@ -1,17 +1,27 @@
 import { faker } from "@faker-js/faker"
 import { errorHandler } from "../helper"
-import { a0 } from "@faker-js/faker/dist/airline-BUL6NtOJ"
+
+/*=======================================
+=            VISITOR PATTERN            =
+=======================================*/
+
+/**
+ *
+ * The visitor pattern is a behavioral design pattern that allows you 
+ * to add new behaviors or operations to a set of objects without modifying their structure. 
+ * It achieves this by separating the algorithm from the objects on which it operates.
+ *
+ */
+
 
 /*----------  Abstract Visitor Interface  ----------*/
-
 interface ProductVisitor {
 	visitBook: (elemet: Book) => any
 	visitElectronic: (elemet: Electronic) => any
 	visitGoodies: (elemet: Goodies) => any
 }
 
-/*----------  Abstract Element Class  ----------*/
-
+/*----------  Abstract Visitable Element Class  ----------*/
 class Product {
 	name: string
 	tag: string
@@ -29,9 +39,8 @@ class Product {
 }
 
 
-/*----------  Concrete Class for Elements  ----------*/
-
-class Book extends Product {
+/*----------  Concrete Class for Visitable Elements  ----------*/
+export class Book extends Product {
 
 	author: string
 	readonly isbn: string
@@ -45,18 +54,18 @@ class Book extends Product {
 	accept = ( visitor: ProductVisitor ) => visitor.visitBook(this) 
 }
 
-class Electronic extends Product {
+export class Electronic extends Product {
 
 	section: string
-	constructor ( name: string, tag: string, price: number ) {
+	constructor ( name: string, tag: string, price: number, section: string ) {
 		super(name, tag, price)
-		this.section = 'computer'
+		this.section = section
 	}
 
 	accept = ( visitor: ProductVisitor ) => visitor.visitElectronic(this)
 }
 
-class Goodies extends Product {
+export class Goodies extends Product {
 
 	constructor ( name: string, tag: string, price: number ) {
 		super(name, tag, price)
@@ -67,21 +76,20 @@ class Goodies extends Product {
 
 
 /*----------  Concrete Class for Visitor  ----------*/
+export class PriceCalculatorVisitor implements ProductVisitor {
 
-class PriceCalculatorVisitor implements ProductVisitor {
-
-	visitBook = ( element: Book ) => {
-		const promo = element.isbn.includes('HM') ? 0.15 : 0
+	visitBook = ( element: Book ): number => {
+		const promo = element.isbn.includes('HM') ? 0.10 : 0
 		return element.price - (element.price * promo)
 	}
 
-	visitElectronic = ( element: Electronic ) => {
+	visitElectronic = ( element: Electronic ): number => {
 		const promo = element.tag.includes('HD-123') ? 0.25 : 0
 		return element.price - (element.price * promo)
 	}
 
-	visitGoodies = ( element: Goodies ) => {
-		const promo = element.tag.includes('HD-123') ? 0.2 : 0
+	visitGoodies = ( element: Goodies ): number => {
+		const promo = element.tag.includes('HD-123') ? 0.5 : 0
 		return element.price - (element.price * promo)
 	}
 }
